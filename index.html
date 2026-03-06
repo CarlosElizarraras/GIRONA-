@@ -104,7 +104,7 @@ input[type=text]::placeholder{color:#3D444C}
 /* Match cards */
 .match-crest{width:36px;height:36px;object-fit:contain;border-radius:6px;flex-shrink:0}
 .match-crest-ini{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:'Oswald',sans-serif;flex-shrink:0}
-.match-card{display:grid;grid-template-columns:48px 1fr 108px 1fr 64px;align-items:center;padding:10px 16px;border-bottom:1px solid #21262D18;transition:background .12s}
+.match-card{display:grid;grid-template-columns:28px 1fr 100px 1fr 46px;align-items:center;padding:10px 16px;border-bottom:1px solid #21262D18;transition:background .12s}
 .match-card:hover{background:#0D1117}
 .mc-meta{display:flex;align-items:center;gap:6px}
 .mc-num{color:#3D444C;font-size:10px;width:18px;text-align:right;flex-shrink:0}
@@ -112,7 +112,7 @@ input[type=text]::placeholder{color:#3D444C}
 .mc-team{display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden}
 .mc-home{justify-content:flex-end}
 .mc-away{justify-content:flex-start}
-.mc-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.mc-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 .mc-home .mc-name{text-align:right}
 .mc-score-box{display:flex;align-items:center;justify-content:center}
 .mc-score{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;line-height:1;background:#0D1117;border:1px solid #21262D;padding:5px 10px;min-width:36px;text-align:center}
@@ -205,7 +205,7 @@ input[type=text]::placeholder{color:#3D444C}
   .form-row select,.form-row input[type=text]{width:100%}
   .save-btn{width:100%;padding:11px}
   .match-card{grid-template-columns:36px 1fr 96px 1fr 50px;padding:8px 10px}
-  .mc-name{font-size:11px}
+  .mc-name{font-size:13px}
   .mc-score{font-size:17px;padding:4px 7px}
   .kpi-card{padding:12px 14px}
   .kpi-value{font-size:22px}
@@ -217,7 +217,7 @@ input[type=text]::placeholder{color:#3D444C}
 @media(max-width:480px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .match-card{grid-template-columns:28px 1fr 84px 1fr 40px;padding:7px 8px}
-  .mc-name{font-size:10px}
+  .mc-name{font-size:12px}
   .match-crest,.match-crest-ini{width:26px;height:26px}
 }
 </style>
@@ -226,7 +226,7 @@ input[type=text]::placeholder{color:#3D444C}
 
 <div id="header">
   <div id="header-left">
-    <div class="logo"><img id="header-crest" src="https://img.sofascore.com/api/v1/team/9847/image" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'"/></div>
+    <div class="logo"><img id="header-crest" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg" style="width:32px;height:32px;object-fit:contain" onerror="this.outerHTML='&#9917;'"/></div>
     <div>
       <div class="club-name oswald">GIRONA FC</div>
       <div class="club-sub">Modo Carrera &middot; FIFA 26</div>
@@ -366,78 +366,77 @@ function initials(name){
   return name.slice(0,2).toUpperCase();
 }
 
+/* ── CREST MAP (Wikipedia/Wikimedia — no CORS issues) ── */
 var CREST_MAP={
-  'Real Madrid':'https://img.sofascore.com/api/v1/team/2829/image',
-  'Barcelona':'https://img.sofascore.com/api/v1/team/2817/image',
-  'Atletico Madrid':'https://img.sofascore.com/api/v1/team/2836/image',
-  'Atlético Madrid':'https://img.sofascore.com/api/v1/team/2836/image',
-  'Atletico de Madrid':'https://img.sofascore.com/api/v1/team/2836/image',
-  'Atl. Madrid':'https://img.sofascore.com/api/v1/team/2836/image',
-  'Sevilla':'https://img.sofascore.com/api/v1/team/2833/image',
-  'Villarreal':'https://img.sofascore.com/api/v1/team/2828/image',
-  'Real Betis':'https://img.sofascore.com/api/v1/team/2818/image',
-  'Betis':'https://img.sofascore.com/api/v1/team/2818/image',
-  'Valencia':'https://img.sofascore.com/api/v1/team/2826/image',
-  'Athletic Club':'https://img.sofascore.com/api/v1/team/2825/image',
-  'Athletic Bilbao':'https://img.sofascore.com/api/v1/team/2825/image',
-  'Real Sociedad':'https://img.sofascore.com/api/v1/team/2824/image',
-  'Celta Vigo':'https://img.sofascore.com/api/v1/team/2823/image',
-  'Getafe':'https://img.sofascore.com/api/v1/team/2859/image',
-  'Osasuna':'https://img.sofascore.com/api/v1/team/2820/image',
-  'Rayo Vallecano':'https://img.sofascore.com/api/v1/team/2858/image',
-  'Mallorca':'https://img.sofascore.com/api/v1/team/2843/image',
-  'Alavés':'https://img.sofascore.com/api/v1/team/2821/image',
-  'Alaves':'https://img.sofascore.com/api/v1/team/2821/image',
-  'Espanyol':'https://img.sofascore.com/api/v1/team/2819/image',
-  'Leganés':'https://img.sofascore.com/api/v1/team/6577/image',
-  'Leganes':'https://img.sofascore.com/api/v1/team/6577/image',
-  'Las Palmas':'https://img.sofascore.com/api/v1/team/6398/image',
-  'Valladolid':'https://img.sofascore.com/api/v1/team/2860/image',
-  'Girona FC':'https://img.sofascore.com/api/v1/team/9847/image',
-  'Girona':'https://img.sofascore.com/api/v1/team/9847/image',
-  'Granada':'https://img.sofascore.com/api/v1/team/2856/image',
-  'Almería':'https://img.sofascore.com/api/v1/team/2861/image',
-  'Almeria':'https://img.sofascore.com/api/v1/team/2861/image',
-  'Cádiz':'https://img.sofascore.com/api/v1/team/2922/image',
-  'Cadiz':'https://img.sofascore.com/api/v1/team/2922/image',
-  'Manchester City':'https://img.sofascore.com/api/v1/team/17/image',
-  'Manchester United':'https://img.sofascore.com/api/v1/team/35/image',
-  'Liverpool':'https://img.sofascore.com/api/v1/team/44/image',
-  'Arsenal':'https://img.sofascore.com/api/v1/team/42/image',
-  'Chelsea':'https://img.sofascore.com/api/v1/team/38/image',
-  'Tottenham':'https://img.sofascore.com/api/v1/team/33/image',
-  'Tottenham Hotspur':'https://img.sofascore.com/api/v1/team/33/image',
-  'Newcastle':'https://img.sofascore.com/api/v1/team/39/image',
-  'Aston Villa':'https://img.sofascore.com/api/v1/team/40/image',
-  'West Ham':'https://img.sofascore.com/api/v1/team/37/image',
-  'Brighton':'https://img.sofascore.com/api/v1/team/30/image',
-  'Wolves':'https://img.sofascore.com/api/v1/team/3/image',
-  'Bayern Munich':'https://img.sofascore.com/api/v1/team/2672/image',
-  'Bayern':'https://img.sofascore.com/api/v1/team/2672/image',
-  'Borussia Dortmund':'https://img.sofascore.com/api/v1/team/2673/image',
-  'Dortmund':'https://img.sofascore.com/api/v1/team/2673/image',
-  'Bayer Leverkusen':'https://img.sofascore.com/api/v1/team/2681/image',
-  'RB Leipzig':'https://img.sofascore.com/api/v1/team/35016/image',
-  'Juventus':'https://img.sofascore.com/api/v1/team/2686/image',
-  'Inter':'https://img.sofascore.com/api/v1/team/2697/image',
-  'Internazionale':'https://img.sofascore.com/api/v1/team/2697/image',
-  'AC Milan':'https://img.sofascore.com/api/v1/team/2692/image',
-  'Milan':'https://img.sofascore.com/api/v1/team/2692/image',
-  'Napoli':'https://img.sofascore.com/api/v1/team/2714/image',
-  'Roma':'https://img.sofascore.com/api/v1/team/2702/image',
-  'Lazio':'https://img.sofascore.com/api/v1/team/2699/image',
-  'Atalanta':'https://img.sofascore.com/api/v1/team/2698/image',
-  'PSG':'https://img.sofascore.com/api/v1/team/1692/image',
-  'Porto':'https://img.sofascore.com/api/v1/team/2751/image',
-  'Benfica':'https://img.sofascore.com/api/v1/team/2762/image',
-  'Sporting CP':'https://img.sofascore.com/api/v1/team/2764/image',
-  'Ajax':'https://img.sofascore.com/api/v1/team/2789/image',
-  'PSV':'https://img.sofascore.com/api/v1/team/2793/image',
-  'Feyenoord':'https://img.sofascore.com/api/v1/team/2791/image',
-  'Celtic':'https://img.sofascore.com/api/v1/team/2371/image',
-  'Rangers':'https://img.sofascore.com/api/v1/team/2372/image',
-  'Shakhtar':'https://img.sofascore.com/api/v1/team/2860/image',
-  '':''
+'Real Madrid':'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+'Barcelona':'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+'Atlético Madrid':'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg',
+'Girona FC':'https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg',
+'Sevilla':'https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg',
+'Villarreal':'https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_Logo.svg',
+'Real Betis':'https://upload.wikimedia.org/wikipedia/en/1/13/Real_betis_logo.svg',
+'Valencia':'https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg',
+'Athletic Club':'https://upload.wikimedia.org/wikipedia/en/9/98/Club_Athletic_Bilbao_logo.svg',
+'Real Sociedad':'https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg',
+'Celta Vigo':'https://upload.wikimedia.org/wikipedia/en/1/1e/RC_Celta_de_Vigo_logo.svg',
+'Getafe':'https://upload.wikimedia.org/wikipedia/en/7/7b/Getafe_CF_logo.svg',
+'Osasuna':'https://upload.wikimedia.org/wikipedia/en/2/2e/CA_Osasuna_logo.svg',
+'Granada':'https://upload.wikimedia.org/wikipedia/en/7/70/Granada_CF_logo.svg',
+'Almería':'https://upload.wikimedia.org/wikipedia/en/4/45/UD_Almeria_logo.svg',
+'Cádiz':'https://upload.wikimedia.org/wikipedia/en/5/58/C%C3%A1diz_CF_logo.svg',
+'Las Palmas':'https://upload.wikimedia.org/wikipedia/en/8/83/UD_Las_Palmas_logo.svg',
+'Rayo Vallecano':'https://upload.wikimedia.org/wikipedia/en/2/27/Rayo_Vallecano_logo.svg',
+'Mallorca':'https://upload.wikimedia.org/wikipedia/en/6/6c/RCD_Mallorca_logo.svg',
+'Alavés':'https://upload.wikimedia.org/wikipedia/en/3/3b/Deportivo_Alav%C3%A9s_logo.svg',
+
+'Manchester City':'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
+'Manchester United':'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg',
+'Liverpool':'https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg',
+'Arsenal':'https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg',
+'Chelsea':'https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg',
+'Tottenham':'https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg',
+
+'PSG':'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg',
+'Bayern Munich':'https://upload.wikimedia.org/wikipedia/en/1/1f/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg',
+'Borussia Dortmund':'https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg',
+'Juventus':'https://upload.wikimedia.org/wikipedia/commons/1/15/Juventus_FC_2017_logo.svg',
+'Inter':'https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg',
+'AC Milan':'https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg',
+'Napoli':'https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli_logo.svg',
+
+'Espanyol':'https://upload.wikimedia.org/wikipedia/en/7/76/RCD_Espanyol_logo.svg',
+'Girona':'https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg',
+'Leganés':'https://upload.wikimedia.org/wikipedia/en/0/04/Club_Deportivo_Legan%C3%A9s_logo.svg',
+'Leganes':'https://upload.wikimedia.org/wikipedia/en/0/04/Club_Deportivo_Legan%C3%A9s_logo.svg',
+'Valladolid':'https://upload.wikimedia.org/wikipedia/en/b/be/Real_Valladolid_logo.svg',
+'Betis':'https://upload.wikimedia.org/wikipedia/en/1/13/Real_betis_logo.svg',
+'Atletico':'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg',
+'Atletico de Madrid':'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg',
+'Atl. Madrid':'https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg',
+'Barca':'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+'FC Barcelona':'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+'Real Madrid CF':'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+
+'Porto':'https://upload.wikimedia.org/wikipedia/en/3/36/FC_Porto.svg',
+'Benfica':'https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg',
+'Sporting CP':'https://upload.wikimedia.org/wikipedia/en/f/f1/Sporting_CP_%28crest%29.svg',
+'Ajax':'https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg',
+'PSV':'https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg',
+'Feyenoord':'https://upload.wikimedia.org/wikipedia/commons/5/52/Feyenoord_Rotterdam_logo.svg',
+'Bayer Leverkusen':'https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg',
+'RB Leipzig':'https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg',
+'Roma':'https://upload.wikimedia.org/wikipedia/en/5/5c/AS_Roma_Logo_%282017%29.svg',
+'Lazio':'https://upload.wikimedia.org/wikipedia/en/d/d9/SS_Lazio_Badge.svg',
+'Atalanta':'https://upload.wikimedia.org/wikipedia/en/5/51/Atalanta_BC_crest.svg',
+'Shakhtar':'https://upload.wikimedia.org/wikipedia/en/a/ab/FC_Shakhtar_Donetsk.svg',
+'Celtic':'https://upload.wikimedia.org/wikipedia/en/3/38/Celtic_FC_crest.svg',
+'Rangers':'https://upload.wikimedia.org/wikipedia/en/b/bf/Rangers_FC.svg',
+
+'Newcastle':'https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg',
+'Aston Villa':'https://upload.wikimedia.org/wikipedia/en/9/9a/Aston_Villa_FC_crest_%282016%29.svg',
+'West Ham':'https://upload.wikimedia.org/wikipedia/en/c/c2/West_Ham_United_FC_logo.svg',
+'Brighton':'https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_%26_Hove_Albion_logo.svg',
+'Wolves':'https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg'
 };
 function normName(s){
   return s.toLowerCase()
@@ -703,32 +702,7 @@ function renderDashScorers(){
 }
 
 /* ── CREST HTML (async, replaces placeholder when loaded) ── */
-function crestHtml(rivalName,elId){
-  if(!rivalName)return'';
-  var cached=crestCache[rivalName];
-  if(cached&&cached!=='loading'&&cached!=='none'){
-    return'<img src="'+cached+'" style="width:22px;height:22px;object-fit:contain;flex-shrink:0;border-radius:3px" '
-      +'onerror="this.style.display=\'none\'">';
-  }
-  // return initials placeholder, then async fill
-  var col=avatarColor(rivalName);
-  var ini=initials(rivalName);
-  var placeholder='<span id="crest-'+elId+'" style="width:22px;height:22px;border-radius:4px;display:inline-flex;align-items:center;'
-    +'justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;background:'+col+'18;color:'+col+';font-family:Oswald,sans-serif">'+ini+'</span>';
-  if(cached!=='loading'){
-    fetchCrest(rivalName,function(url){
-      var el=document.getElementById('crest-'+elId);
-      if(!el)return;
-      if(url!=='none'){
-        var img=document.createElement('img');
-        img.src=url;img.style.cssText='width:22px;height:22px;object-fit:contain;flex-shrink:0;border-radius:3px';
-        img.onerror=function(){img.style.display='none';};
-        el.parentNode.replaceChild(img,el);
-      }
-    });
-  }
-  return placeholder;
-}
+function crestHtml(rivalName,elId){ return ""; }
 
 /* ── DASHBOARD RIVALS SUMMARY ── */
 function renderDashRivals(){
@@ -752,7 +726,7 @@ function renderDashRivals(){
     var crest=crestHtml(r.name,'dash-'+i);
     return'<tr>'
       +'<td style="text-align:left;padding-left:14px">'
-      +'<div style="display:flex;align-items:center;gap:7px">'+crest+'<span style="font-weight:600;color:#E6EDF3">'+esc(r.name)+'</span></div></td>'
+      +'<div style="display:flex;align-items:center;gap:7px">'+crest+'<span style="font-weight:700;color:#E6EDF3;font-size:13px">'+esc(r.name)+'</span></div></td>'
       +'<td>'+s.pj+'</td>'
       +'<td style="color:#3FB950;font-weight:700">'+s.v+'</td>'
       +'<td>'+s.e+'</td>'
@@ -968,37 +942,13 @@ function buildRivalDetail(r){
 }
 
 /* ── PARTIDOS ── */
-var GIRONA_CREST='https://img.sofascore.com/api/v1/team/9847/image';
+var GIRONA_CREST='';
 
 // Use API-Football's free logo CDN via country + name — no key needed
 // Fallback chain: sofascore search → initials
-function matchCrestHtml(name, uid){
-  if(!name) return crestBox('','',uid);
-  if(crestCache[name] && crestCache[name]!=='loading' && crestCache[name]!=='none'){
-    return'<img src="'+crestCache[name]+'" class="match-crest" onerror="this.style.display=\'none\'">';
-  }
-  var col=avatarColor(name), ini=initials(name);
-  var ph='<div id="mc-'+uid+'" class="match-crest-ini" style="background:'+col+'18;color:'+col+';border:1px solid '+col+'30">'+ini+'</div>';
-  if(crestCache[name]!=='loading'){
-    fetchCrest(name, function(url){
-      var el=document.getElementById('mc-'+uid); if(!el) return;
-      if(url!=='none'){
-        var img=document.createElement('img');
-        img.className='match-crest';
-        img.src=url;
-        img.onerror=function(){ img.style.display='none'; };
-        el.parentNode.replaceChild(img, el);
-      }
-    });
-  }
-  return ph;
-}
+function matchCrestHtml(name,uid){ return ""; }
 
-function crestBox(src, uid){
-  return src
-    ? '<img src="'+src+'" class="match-crest" onerror="this.style.display=\'none\'">'
-    : '<div class="match-crest-ini" style="background:#21262D;color:#7D8590;border:1px solid #30363D">GFC</div>';
-}
+function crestBox(src,uid){ return ""; }
 
 var COMP_BADGE={'Liga':'🇪🇸','Copa del Rey':'🏆','Champions':'⭐'};
 var COMP_COLOR={'Liga':'#58A6FF','Copa del Rey':'#F0A500','Champions':'#E8B800'};
@@ -1052,7 +1002,7 @@ function renderPartidos(){
       // home team
       +'<div class="mc-team mc-home">'
       +'<span class="mc-name" style="color:'+(homeIsGirona?'#E6EDF3':'#7D8590')+'">'+esc(homeName)+'</span>'
-      +homeCrest
+      
       +'</div>'
 
       // score
@@ -1064,7 +1014,7 @@ function renderPartidos(){
 
       // away team
       +'<div class="mc-team mc-away">'
-      +awayCrest
+      
       +'<span class="mc-name" style="color:'+(awayIsGirona?'#E6EDF3':'#7D8590')+'">'+esc(awayName)+'</span>'
       +'</div>'
 
