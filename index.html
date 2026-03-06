@@ -775,19 +775,57 @@ function makeTable(title,rows){
 }
 
 function renderTables(s){
+  var COND_ICON={'Local':'\uD83C\uDFE0','Visitante':'\u2708\uFE0F','Neutral':'\u2696\uFE0F'};
+  var COMP_ICON={'Liga':'\uD83C\uDDE7\uD83C\uDDF8','Copa del Rey':'\uD83C\uDFC6','Champions':'\u2B50'};
+
   var overall=[{label:'Total General',stats:s}];
-  var byCond=CONDS.map(function(c){return{label:c,stats:calcStats(matches.filter(function(m){return m.cond===c;}))};});
-  var byComp=COMPS.map(function(c){return{label:c,stats:calcStats(matches.filter(function(m){return m.comp===c;}))};});
-  var cross=[];
-  COMPS.forEach(function(comp){CONDS.forEach(function(cond){
-    var st=calcStats(matches.filter(function(m){return m.comp===comp&&m.cond===cond;}));
-    if(st.pj>0)cross.push({label:comp+' \u00b7 '+cond,stats:st});
-  });});
+  var byCond=CONDS.map(function(c){return{label:COND_ICON[c]+'  '+c,stats:calcStats(matches.filter(function(m){return m.cond===c;}))};});
+
+  // Por Competición: total + desglose Local/Visitante/Neutral por cada comp
+  var byComp=[];
+  COMPS.forEach(function(comp){
+    var compMs=matches.filter(function(m){return m.comp===comp;});
+    var compStats=calcStats(compMs);
+    // only add comp row if there are matches
+    if(compStats.pj>0){
+      byComp.push({label:COMP_ICON[comp]+'  '+comp, stats:compStats, bold:true});
+      CONDS.forEach(function(cond){
+        var st=calcStats(compMs.filter(function(m){return m.cond===cond;}));
+        if(st.pj>0) byComp.push({label:'\u00a0\u00a0\u00a0\u00a0'+COND_ICON[cond]+' '+cond, stats:st, sub:true});
+      });
+    } else {
+      byComp.push({label:COMP_ICON[comp]+'  '+comp, stats:compStats, bold:true});
+    }
+  });
+
   var html=makeTable('\uD83C\uDF10  Desempe\u00f1o General',overall)
     +makeTable('\uD83C\uDFE0\u2708\uFE0F  Local / Visitante / Neutral',byCond)
-    +makeTable('\uD83C\uDFC6  Por Competici\u00f3n',byComp);
-  if(cross.length)html+=makeTable('\uD83D\uDD00  Competici\u00f3n \u00d7 Condici\u00f3n',cross);
+    +makeTableComp('\uD83C\uDFC6  Por Competici\u00f3n',byComp);
   document.getElementById('stats-section').innerHTML=html;
+}
+
+function makeTableComp(title,rows){
+  var cols=['Categor\u00eda','PJ','V','E','D','GF','GC','Pts','Efectiv.'];
+  var thead=cols.map(function(c){return'<th>'+c+'</th>';}).join('');
+  var tbody=rows.map(function(row){
+    var s=row.stats,ep=s.pj>0?(s.ef*100).toFixed(1)+'%':'\u2014',ec=efColor(s.ef,s.pj);
+    var labelStyle=row.bold
+      ?'font-weight:800;color:#E6EDF3;font-size:13px'
+      :'font-weight:500;color:#7D8590;font-size:12px';
+    var rowBg=row.bold?'':'background:#0A0F14';
+    return'<tr style="'+rowBg+'">'
+      +'<td style="'+labelStyle+'">'+row.label+'</td>'
+      +'<td>'+s.pj+'</td>'
+      +'<td style="color:#3FB950">'+s.v+'</td>'
+      +'<td>'+s.e+'</td>'
+      +'<td style="color:#F85149">'+s.d+'</td>'
+      +'<td>'+s.gf+'</td><td>'+s.gc+'</td>'
+      +'<td style="font-weight:700">'+s.pts+'</td>'
+      +'<td>'+(s.pj>0?'<span class="efect-pill" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span>':'\u2014')+'</td>'
+      +'</tr>';
+  }).join('');
+  return'<div class="stats-table-wrap"><div class="stats-table-title oswald">'+title+'</div>'
+    +'<div style="overflow-x:auto"><table class="st"><thead><tr>'+thead+'</tr></thead><tbody>'+tbody+'</tbody></table></div></div>';
 }
 
 /* ── RIVALES TAB (full, with expandable detail) ── */
