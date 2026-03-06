@@ -226,7 +226,7 @@ input[type=text]::placeholder{color:#3D444C}
 
 <div id="header">
   <div id="header-left">
-    <div class="logo"><img id="header-crest" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg" style="width:32px;height:32px;object-fit:contain" onerror="this.outerHTML='&#9917;'"/></div>
+    <div class="logo" style="background:transparent;border:none"><img id="header-crest" src="https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg" style="width:36px;height:36px;object-fit:contain" onerror="this.outerHTML='&#9917;'"/></div>
     <div>
       <div class="club-name oswald">GIRONA FC</div>
       <div class="club-sub">Modo Carrera &middot; FIFA 26</div>
@@ -706,50 +706,7 @@ function crestHtml(rivalName,elId){ return ""; }
 
 /* ── DASHBOARD RIVALS SUMMARY ── */
 function renderDashRivals(){
-  var el=document.getElementById('dash-rivals');
-  var rivals=getRivalList();
-  if(!rivals.length){el.style.display='none';el.innerHTML='';return;}
-  el.style.display='block';
-
-  var shown=rivals.slice(0,DASH_RIVALS_MAX);
-  var more=rivals.length-shown.length;
-
-  var thead='<tr>'
-    +'<th style="text-align:left;padding-left:14px">Rival</th>'
-    +'<th>PJ</th><th>V</th><th>E</th><th>D</th><th>GF</th><th>GC</th><th>DG</th><th>Efectiv.</th>'
-    +'</tr>';
-
-  var tbody=shown.map(function(r,i){
-    var s=r.stats,ec=efColor(s.ef,s.pj);
-    var ep=s.pj>0?(s.ef*100).toFixed(1)+'%':'\u2014';
-    var dg=s.gf-s.gc,dgStr=(dg>0?'+':'')+dg;
-    var crest=crestHtml(r.name,'dash-'+i);
-    return'<tr>'
-      +'<td style="text-align:left;padding-left:14px">'
-      +'<div style="display:flex;align-items:center;gap:7px">'+crest+'<span style="font-weight:700;color:#E6EDF3;font-size:13px">'+esc(r.name)+'</span></div></td>'
-      +'<td>'+s.pj+'</td>'
-      +'<td style="color:#3FB950;font-weight:700">'+s.v+'</td>'
-      +'<td>'+s.e+'</td>'
-      +'<td style="color:#F85149">'+s.d+'</td>'
-      +'<td>'+s.gf+'</td><td>'+s.gc+'</td>'
-      +'<td style="color:'+(dg>0?'#3FB950':dg<0?'#F85149':'#7D8590')+';font-weight:700">'+dgStr+'</td>'
-      +'<td><span class="efect-pill" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span></td>'
-      +'</tr>';
-  }).join('');
-
-  var footer=more>0
-    ?'<div style="padding:10px 16px;text-align:center;border-top:1px solid #21262D">'
-      +'<button class="see-all-btn" onclick="switchView(\'rivales\')">Ver todos los rivales ('+rivals.length+') &#8594;</button></div>'
-    :'';
-
-  el.innerHTML='<div class="dash-rivals-wrap">'
-    +'<div class="dash-rivals-header">'
-    +'<span class="dash-rivals-title oswald">&#9876;&#65039; Rivales &middot; '+rivals.length+' equipo'+(rivals.length!==1?'s':'')+'</span>'
-    +'<button class="see-all-btn" onclick="switchView(\'rivales\')">Ver detalle &#8594;</button>'
-    +'</div>'
-    +'<div style="overflow-x:auto"><table class="rt"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>'
-    +footer
-    +'</div>';
+  document.getElementById('dash-rivals').style.display='none';
 }
 
 function playerAvatarHtml(p,size){
