@@ -602,7 +602,7 @@ function renderKPIs(s){
     {icon:'&#127937;',label:'Empates',value:s.e,color:'#F0A500',sub:''},
     {icon:'&#10060;',label:'Derrotas',value:s.d,color:'#F85149',sub:''},
     {icon:'&#9917;',label:'Goles',value:s.gf+'\u2013'+s.gc,color:'#E8B800',sub:'DG: '+(dg>=0?'+':'')+dg},
-    {icon:'&#128200;',label:'Efectividad',value:ef,color:efc,sub:s.pj>0?s.pts+' pts de '+(s.pj*3):'Sin partidos'},
+    {icon:'&#128200;',label:'Efectividad',value:ef,color:efc,sub:''},
   ];
   document.getElementById('kpi-grid').innerHTML=kpis.map(function(k){
     return'<div class="kpi-card"><div class="kpi-bar" style="background:'+k.color+'"></div>'
@@ -710,8 +710,7 @@ function renderDashRivals(){
 }
 
 function playerAvatarHtml(p,size){
-  size=size||34;
-  if(p.photo)return'<img src="'+p.photo+'" style="width:'+size+'px;height:'+size+'px;border-radius:50%;object-fit:cover;border:2px solid #21262D;flex-shrink:0">';
+  return ''; // avatars hidden
   var c=avatarColor(p.name);
   return'<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:'+(size*0.35)+'px;font-weight:800;flex-shrink:0;border:2px solid '+c+'40;background:'+c+'18;color:'+c+';font-family:Oswald,sans-serif">'+initials(p.name)+'</div>';
 }
@@ -760,14 +759,13 @@ function renderScorers(){
 
 /* ── STATS TABLES ── */
 function makeTable(title,rows){
-  var cols=['Categor\u00eda','PJ','V','E','D','GF','GC','Pts','Efectiv.'];
+  var cols=['Categor\u00eda','PJ','V','E','D','GF','GC','Efectiv.'];
   var thead=cols.map(function(c){return'<th>'+c+'</th>';}).join('');
   var tbody=rows.map(function(row){
     var s=row.stats,ep=s.pj>0?(s.ef*100).toFixed(1)+'%':'\u2014',ec=efColor(s.ef,s.pj);
     return'<tr><td>'+row.label+'</td><td>'+s.pj+'</td>'
       +'<td style="color:#3FB950">'+s.v+'</td><td>'+s.e+'</td>'
       +'<td style="color:#F85149">'+s.d+'</td><td>'+s.gf+'</td><td>'+s.gc+'</td>'
-      +'<td style="font-weight:700">'+s.pts+'</td>'
       +'<td><span class="efect-pill" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span></td></tr>';
   }).join('');
   return'<div class="stats-table-wrap"><div class="stats-table-title oswald">'+title+'</div>'
@@ -805,7 +803,7 @@ function renderTables(s){
 }
 
 function makeTableComp(title,rows){
-  var cols=['Categor\u00eda','PJ','V','E','D','GF','GC','Pts','Efectiv.'];
+  var cols=['Categor\u00eda','PJ','V','E','D','GF','GC','Efectiv.'];
   var thead=cols.map(function(c){return'<th>'+c+'</th>';}).join('');
   var tbody=rows.map(function(row){
     var s=row.stats,ep=s.pj>0?(s.ef*100).toFixed(1)+'%':'\u2014',ec=efColor(s.ef,s.pj);
@@ -820,7 +818,6 @@ function makeTableComp(title,rows){
       +'<td>'+s.e+'</td>'
       +'<td style="color:#F85149">'+s.d+'</td>'
       +'<td>'+s.gf+'</td><td>'+s.gc+'</td>'
-      +'<td style="font-weight:700">'+s.pts+'</td>'
       +'<td>'+(s.pj>0?'<span class="efect-pill" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span>':'\u2014')+'</td>'
       +'</tr>';
   }).join('');
@@ -842,7 +839,7 @@ function renderRivales(){
 
   var thead='<tr>'
     +'<th style="text-align:left;padding-left:14px">Rival</th>'
-    +'<th>PJ</th><th>V</th><th>E</th><th>D</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th><th>Efectiv.</th>'
+    +'<th>PJ</th><th>V</th><th>E</th><th>D</th><th>GF</th><th>GC</th><th>DG</th><th>Efectiv.</th>'
     +'</tr>';
 
   function rivalRows(list){
@@ -863,11 +860,10 @@ function renderRivales(){
         +'<td style="color:#F85149">'+s.d+'</td>'
         +'<td>'+s.gf+'</td><td>'+s.gc+'</td>'
         +'<td style="color:'+(dg>0?'#3FB950':dg<0?'#F85149':'#7D8590')+';font-weight:700">'+dgStr+'</td>'
-        +'<td style="font-weight:700">'+s.pts+'</td>'
         +'<td><span class="efect-pill" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span></td>'
         +'</tr>'
         +(isActive
-          ?'<tr class="rival-detail-row"><td colspan="10"><div class="rival-detail-inner">'+buildRivalDetail(r)+'</div></td></tr>'
+          ?'<tr class="rival-detail-row"><td colspan="9"><div class="rival-detail-inner">'+buildRivalDetail(r)+'</div></td></tr>'
           :'');
     }).join('');
   }
