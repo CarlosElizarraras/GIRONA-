@@ -747,6 +747,7 @@ function renderTemps(){
     +'<span style="font-size:12px;color:#2EA84A">'+s.v+'V</span><span style="font-size:12px">'+s.e+'E</span>'
     +'<span style="font-size:12px;color:#F85149">'+s.d+'D</span>'
     +'<span style="font-size:12px;color:#E8B800">'+efp(s.ef,s.pj)+'</span>'
+    +'<button onclick="deleteCurSeason()" style="margin-left:auto;padding:5px 12px;border-radius:7px;border:1px solid #F8514940;background:transparent;color:#F85149;font-size:11px;font-weight:700;cursor:pointer">🗑 Borrar temporada actual</button>'
     +'</div>';
   var listEl=document.getElementById('seas-list');
   if(sns.length<=1){listEl.innerHTML='';return;}
@@ -782,6 +783,19 @@ function renderTemps(){
   listEl.innerHTML=html;
 }
 
+function deleteCurSeason(){
+  var sns=Object.keys(G.seasons);
+  if(sns.length<=1){alert('No puedes borrar la única temporada existente.');return;}
+  var cur=G.activeSeason;
+  var ms=(G.seasons[cur]&&G.seasons[cur].matches)||[];
+  var msg='¿Borrar la temporada '+cur+'?'+(ms.length?' Tiene '+ms.length+' partidos registrados.':'')+' Esta acción no se puede deshacer.';
+  if(!confirm(msg))return;
+  delete G.seasons[cur];
+  // switch to most recent remaining season
+  var remaining=Object.keys(G.seasons);
+  G.activeSeason=remaining[remaining.length-1];
+  rebuildRivals();save();setupComp();render();renderTemps();
+}
 function exportData(){
   var blob=new Blob([JSON.stringify(G,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');
