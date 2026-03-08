@@ -267,10 +267,13 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
         <div class="fg"><label class="fl">Nueva temporada</label><input type="text" id="nsn" placeholder="Ej: 2026/27" maxlength="10" style="width:110px"/></div>
         <div class="fg"><label class="fl">Competiciones</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-liga" checked/> Liga</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-copa" checked/> Copa del Rey</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-ch"/> Champions</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-super"/> Supercopa</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-custom"/> Otra:</label>
+            <input type="text" id="nc-custom-name" placeholder="Nombre" maxlength="30" style="width:120px;padding:5px 8px;font-size:12px"/>
           </div>
         </div>
         <button class="sbtn" onclick="createSeason()" style="padding:9px 18px">Cerrar temporada y crear nueva</button>
@@ -282,8 +285,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 <div id="footer">GIRONA FC &middot; MODO CARRERA FIFA 26 &middot; Datos guardados autom&aacute;ticamente</div>
 <script>
 var SK='girona_v4';
-var CB={'Liga':'🇪🇸','Copa del Rey':'🏆','Champions':'⭐'};
-var CC={'Liga':'#3A8EE8','Copa del Rey':'#E87820','Champions':'#E8B800'};
+var CB={'Liga':'🇪🇸','Copa del Rey':'🏆','Champions':'⭐','Supercopa de España':'🥇'};
+var CC={'Liga':'#3A8EE8','Copa del Rey':'#E87820','Champions':'#E8B800','Supercopa de España':'#E87820'};
 var PL={'FWD':'Delantero','MID':'Mediocampista','DEF':'Defensa','GK':'Portero'};
 var CONDS=['Local','Visitante','Neutral'];
 var CI={'Local':'🏠','Visitante':'✈️','Neutral':'⚖️'};
@@ -730,6 +733,9 @@ function createSeason(){
   if(document.getElementById('nc-liga').checked)comps.push('Liga');
   if(document.getElementById('nc-copa').checked)comps.push('Copa del Rey');
   if(document.getElementById('nc-ch').checked)comps.push('Champions');
+  if(document.getElementById('nc-super').checked)comps.push('Supercopa de España');
+  var customComp=document.getElementById('nc-custom-name').value.trim();
+  if(document.getElementById('nc-custom').checked&&customComp)comps.push(customComp);
   if(!comps.length){alert('Selecciona al menos una competición');return;}
   if(G.seasons[name]){alert('Esa temporada ya existe');return;}
   initSeason(name,comps);G.activeSeason=name;
