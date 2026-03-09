@@ -321,8 +321,8 @@ var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'
 
 var G={activeSeason:'2025/26',seasons:{},allRivals:{},career:{trophies:[]}};
 var barC=null,lineC=null,confirmClear=false,activeRival=null;
-var plantSort={col:'pos',dir:1};   // col: 'name'|'pos'|'pj'|'goles'|'asistencias'|'gc'|'imbatidas'
-var careerSort={col:'pos',dir:1};
+var plantSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
+var careerSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
 
 function save(){try{localStorage.setItem(SK,JSON.stringify(G));}catch(e){}}
 function load(){
@@ -599,18 +599,20 @@ function upStat(id,comp,stat,val){
   p.stats[comp][stat]=v;save();renderTops();renderDashTops();
 }
 
-function sortPlant(col){
-  if(plantSort.col===col)plantSort.dir*=-1; else{plantSort.col=col;plantSort.dir=1;}
+function sortPlant(group,col){
+  var s=plantSort[group];
+  if(s.col===col)s.dir*=-1; else{s.col=col;s.dir=-1;}
   renderPlantilla();
 }
-function sortCareer(col){
-  if(careerSort.col===col)careerSort.dir*=-1; else{careerSort.col=col;careerSort.dir=1;}
+function sortCareer(group,col){
+  var s=careerSort[group];
+  if(s.col===col)s.dir*=-1; else{s.col=col;s.dir=-1;}
   renderCareerRoster();
 }
-function mkSortTh(label,col,sortObj,fn,extraStyle){
-  var isActive=sortObj.col===col;
-  var arrow=isActive?(sortObj.dir===1?'↑':'↓'):'↕';
-  return'<th class="sth'+(isActive?' active-sort':'')+'"'+(extraStyle?' style="'+extraStyle+'"':'')+' onclick="'+fn+'(\''+col+'\')">'
+function mkSortTh(label,col,sortState,fnCall,extraStyle){
+  var isActive=sortState.col===col;
+  var arrow=isActive?(sortState.dir===-1?'↓':'↑'):'↕';
+  return'<th class="sth'+(isActive?' active-sort':'')+'"'+(extraStyle?' style="'+extraStyle+'"':'')+' onclick="'+fnCall+'">'
     +label+'<span class="sarr">'+arrow+'</span></th>';
 }
 
@@ -619,40 +621,43 @@ function renderPlantilla(){
   if(!ps.length){body.innerHTML='<div class="empty">Agrega jugadores a la plantilla</div>';return;}
   var ord=['FWD','MID','DEF','GK'];
 
-  // compute totals for sorting
   function pTot(p,stat){
     return Object.keys(p.stats||{}).reduce(function(s,c){return s+((p.stats[c]&&p.stats[c][stat])||0);},0);
   }
-  var sc=plantSort.col,sd=plantSort.dir;
-  var allPs=ps.slice().sort(function(a,b){
-    var av,bv;
-    if(sc==='name'){av=a.name.toLowerCase();bv=b.name.toLowerCase();return av<bv?-sd:av>bv?sd:0;}
-    if(sc==='pos'){av=ord.indexOf(a.pos);bv=ord.indexOf(b.pos);}
-    else if(sc==='pj'){av=pTot(a,'partidos');bv=pTot(b,'partidos');}
-    else if(sc==='goles'){av=pTot(a,'goles');bv=pTot(b,'goles');}
-    else if(sc==='asistencias'){av=pTot(a,'asistencias');bv=pTot(b,'asistencias');}
-    else if(sc==='gc'){av=pTot(a,'gc');bv=pTot(b,'gc');}
-    else if(sc==='imbatidas'){av=pTot(a,'imbatidas');bv=pTot(b,'imbatidas');}
-    else{av=ord.indexOf(a.pos);bv=ord.indexOf(b.pos);}
-    return(bv-av)*sd;
-  });
+  function sortGroup(arr,isGK){
+    var ss=isGK?plantSort.gk:plantSort.out, sc=ss.col, sd=ss.dir;
+    return arr.slice().sort(function(a,b){
+      var av,bv;
+      if(sc==='pj'){av=pTot(a,'partidos');bv=pTot(b,'partidos');}
+      else if(sc==='goles'){av=pTot(a,'goles');bv=pTot(b,'goles');}
+      else if(sc==='asistencias'){av=pTot(a,'asistencias');bv=pTot(b,'asistencias');}
+      else if(sc==='gc'){av=pTot(a,'gc');bv=pTot(b,'gc');}
+      else if(sc==='imbatidas'){av=pTot(a,'imbatidas');bv=pTot(b,'imbatidas');}
+      else{av=pTot(a,'partidos');bv=pTot(b,'partidos');}
+      return(bv-av)*sd;
+    });
+  }
 
   function mkHead(isGK){
-    var h=mkSortTh('Jugador','name',plantSort,'sortPlant','text-align:left;padding-left:14px;min-width:150px');
+    var h='<th style="text-align:left;padding-left:14px;min-width:150px">Jugador</th>';
     comps.forEach(function(comp){h+='<th colspan="3" style="border-left:1px solid #1E2530">'+comp+'</th>';});
     h+='<th colspan="3" style="border-left:1px solid #1E2530">Total</th><th></th>';
     return'<tr>'+h+'</tr>';
   }
   function mkSubHead(isGK){
     var h='<th></th>';
+    var grp=isGK?'gk':'out';
+    var ss=isGK?plantSort.gk:plantSort.out;
     var subs=isGK?[['pj','PJ'],['gc','GC'],['imbatidas','PI']]:[ ['pj','PJ'],['goles','G'],['asistencias','A']];
-    var reps=comps.length+1;
+    var reps=comps.length;
+    // per-comp columns (not sortable, just labels)
     for(var i=0;i<reps;i++){
-      subs.forEach(function(s,j){
-        var isLast=(i===reps-1);
-        h+=mkSortTh(s[1],s[0],plantSort,'sortPlant','color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':''));
-      });
+      subs.forEach(function(s,j){h+='<th style="color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':'')+'">'+s[1]+'</th>';});
     }
+    // total columns (sortable)
+    subs.forEach(function(s,j){
+      h+=mkSortTh(s[1],s[0],ss,'sortPlant(\''+grp+'\',\''+s[0]+'\')','color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':''));
+    });
     h+='<th></th>';
     return'<tr style="background:var(--bg)">'+h+'</tr>';
   }
@@ -684,22 +689,17 @@ function renderPlantilla(){
     cells+='<td><button class="del-btn" onclick="removePlayer('+p.id+')">✕</button></td>';
     return'<tr>'+cells+'</tr>';
   }
-  // If sorting by position (default), split into groups; otherwise show all together
+  var rawPs=ps.slice();
+  var gks=sortGroup(rawPs.filter(function(p){return p.pos==='GK';}),true);
+  var out=sortGroup(rawPs.filter(function(p){return p.pos!=='GK';}),false);
   var html='';
-  if(sc==='pos'){
-    var gks=allPs.filter(function(p){return p.pos==='GK';});
-    var out=allPs.filter(function(p){return p.pos!=='GK';});
-    if(out.length){
-      html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase">Jugadores de campo</div>';
-      html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSubHead(false)+'</thead><tbody>'+out.map(mkRow).join('')+'</tbody></table></div>';
-    }
-    if(gks.length){
-      html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase;border-top:1px solid var(--bd)">Porteros</div>';
-      html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSubHead(true)+'</thead><tbody>'+gks.map(mkRow).join('')+'</tbody></table></div>';
-    }
-  } else {
-    // mixed table when sorting by stat
-    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSubHead(false)+'</thead><tbody>'+allPs.map(mkRow).join('')+'</tbody></table></div>';
+  if(out.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase">Jugadores de campo</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSubHead(false)+'</thead><tbody>'+out.map(mkRow).join('')+'</tbody></table></div>';
+  }
+  if(gks.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase;border-top:1px solid var(--bd)">Porteros</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSubHead(true)+'</thead><tbody>'+gks.map(mkRow).join('')+'</tbody></table></div>';
   }
   body.innerHTML=html;
 }
@@ -963,19 +963,19 @@ function renderCareerRoster(){
   });
 
   var ord=['FWD','MID','DEF','GK'];
-  var sc2=careerSort.col,sd2=careerSort.dir;
-  var sorted=names.slice().sort(function(a,b){
-    var av,bv,ta=totals(a),tb=totals(b);
-    if(sc2==='name'){av=a.toLowerCase();bv=b.toLowerCase();return av<bv?-sd2:av>bv?sd2:0;}
-    if(sc2==='pos'){av=ord.indexOf(roster[a].pos);bv=ord.indexOf(roster[b].pos);}
-    else if(sc2==='pj'){av=ta.partidos;bv=tb.partidos;}
-    else if(sc2==='goles'){av=ta.goles;bv=tb.goles;}
-    else if(sc2==='asistencias'){av=ta.asistencias;bv=tb.asistencias;}
-    else if(sc2==='gc'){av=ta.gc;bv=tb.gc;}
-    else if(sc2==='imbatidas'){av=ta.imbatidas;bv=tb.imbatidas;}
-    else{av=ord.indexOf(roster[a].pos);bv=ord.indexOf(roster[b].pos);}
-    return(bv-av)*sd2;
-  });
+  function sortCareerGroup(arr,isGK){
+    var ss=isGK?careerSort.gk:careerSort.out, sc=ss.col, sd=ss.dir;
+    return arr.slice().sort(function(a,b){
+      var ta=totals(a),tb=totals(b),av,bv;
+      if(sc==='pj'){av=ta.partidos;bv=tb.partidos;}
+      else if(sc==='goles'){av=ta.goles;bv=tb.goles;}
+      else if(sc==='asistencias'){av=ta.asistencias;bv=tb.asistencias;}
+      else if(sc==='gc'){av=ta.gc;bv=tb.gc;}
+      else if(sc==='imbatidas'){av=ta.imbatidas;bv=tb.imbatidas;}
+      else{av=ta.partidos;bv=tb.partidos;}
+      return(bv-av)*sd;
+    });
+  }
 
   function totals(name){
     var r=roster[name],tot={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
@@ -1006,20 +1006,24 @@ function renderCareerRoster(){
   }
 
   function mkHead(isGK){
-    var h=mkSortTh('Jugador','name',careerSort,'sortCareer','text-align:left;padding-left:14px;min-width:150px');
+    var h='<th style="text-align:left;padding-left:14px;min-width:150px">Jugador</th>';
     allComps.forEach(function(comp){h+='<th colspan="3" style="border-left:1px solid #1E2530">'+comp+'</th>';});
     h+='<th colspan="3" style="border-left:1px solid #1E2530">Total Carrera</th>';
     return'<tr>'+h+'</tr>';
   }
   function mkSub(isGK){
     var h='<th></th>';
+    var grp=isGK?'gk':'out';
+    var ss=isGK?careerSort.gk:careerSort.out;
     var subs=isGK?[['pj','PJ'],['gc','GC'],['imbatidas','PI']]:[ ['pj','PJ'],['goles','G'],['asistencias','A']];
-    var reps=allComps.length+1;
-    for(var i=0;i<reps;i++){
-      subs.forEach(function(s,j){
-        h+=mkSortTh(s[1],s[0],careerSort,'sortCareer','color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':''));
-      });
+    // per-comp labels (not sortable)
+    for(var i=0;i<allComps.length;i++){
+      subs.forEach(function(s,j){h+='<th style="color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':'')+'">'+s[1]+'</th>';});
     }
+    // total columns (sortable)
+    subs.forEach(function(s,j){
+      h+=mkSortTh(s[1],s[0],ss,'sortCareer(\''+grp+'\',\''+s[0]+'\')','color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':''));
+    });
     return'<tr style="background:var(--bg)">'+h+'</tr>';
   }
   function mkRow(name){
@@ -1046,20 +1050,17 @@ function renderCareerRoster(){
     return'<tr>'+cells+'</tr>';
   }
 
+  var allNames=Object.keys(roster);
+  var gkNames=sortCareerGroup(allNames.filter(function(n){return roster[n].pos==='GK';}),true);
+  var outNames=sortCareerGroup(allNames.filter(function(n){return roster[n].pos!=='GK';}),false);
   var html='';
-  if(sc2==='pos'){
-    var gks=sorted.filter(function(n){return roster[n].pos==='GK';});
-    var out=sorted.filter(function(n){return roster[n].pos!=='GK';});
-    if(out.length){
-      html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase">Jugadores de campo</div>';
-      html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSub(false)+'</thead><tbody>'+out.map(mkRow).join('')+'</tbody></table></div>';
-    }
-    if(gks.length){
-      html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase;border-top:1px solid var(--bd)">Porteros</div>';
-      html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSub(true)+'</thead><tbody>'+gks.map(mkRow).join('')+'</tbody></table></div>';
-    }
-  } else {
-    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSub(false)+'</thead><tbody>'+sorted.map(mkRow).join('')+'</tbody></table></div>';
+  if(outNames.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase">Jugadores de campo</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSub(false)+'</thead><tbody>'+outNames.map(mkRow).join('')+'</tbody></table></div>';
+  }
+  if(gkNames.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase;border-top:1px solid var(--bd)">Porteros</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSub(true)+'</thead><tbody>'+gkNames.map(mkRow).join('')+'</tbody></table></div>';
   }
   el.innerHTML=html;
 }
