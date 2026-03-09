@@ -223,7 +223,14 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
       <div class="ccard"><div class="ctit">&#128200; Efectividad acumulada</div><div class="cwrap"><canvas id="chart-line"></canvas></div></div>
     </div>
     <div id="dash-tops" style="display:none" class="mb14"></div>
+    <div id="stats-toggle" style="display:none;margin-bottom:12px">
+      <div style="display:flex;gap:6px">
+        <button id="tog-seas" class="nb on" onclick="toggleStats('season')" style="font-size:11px;padding:6px 14px">📅 Temporada</button>
+        <button id="tog-car" class="nb" onclick="toggleStats('career')" style="font-size:11px;padding:6px 14px">🌐 Carrera completa</button>
+      </div>
+    </div>
     <div id="dash-stats" style="display:none"></div>
+    <div id="dash-career-stats" style="display:none"></div>
     <div id="dash-empty" style="text-align:center;padding:60px 20px;color:var(--mt)">
       <div style="font-size:44px;margin-bottom:10px">&#9917;</div>
       <div style="font-weight:700;margin-bottom:4px">Sin partidos esta temporada</div>
@@ -235,6 +242,11 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
   </div>
   <div id="view-rivales" class="view"><div id="rbody"></div></div>
   <div id="view-plantilla" class="view">
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      <button id="ptab-seas" class="nb on" onclick="switchPlantTab('season')" style="font-size:11px;padding:6px 14px">📅 Temporada activa</button>
+      <button id="ptab-career" class="nb" onclick="switchPlantTab('career')" style="font-size:11px;padding:6px 14px">🌐 Historial de carrera</button>
+    </div>
+    <div id="plant-season-view">
     <div class="swrap mb14">
       <div class="shdr"><span class="stit">&#128100; Plantilla &amp; Estad&iacute;sticas</span><span class="smeta">Edita goles, asistencias y partidos directo en la tabla</span></div>
       <div class="fr" style="padding:12px 16px;border-bottom:1px solid var(--bd)">
@@ -246,6 +258,13 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
     </div>
     <div id="tops-seas" class="mb14"></div>
     <div id="tops-career"></div>
+    </div><!-- end plant-season-view -->
+    <div id="plant-career-view" style="display:none">
+      <div class="swrap">
+        <div class="shdr"><span class="stit">🌐 Historial de Carrera · Toda la plantilla</span><span class="smeta">Estadísticas acumuladas de todos los jugadores</span></div>
+        <div id="career-roster-body"></div>
+      </div>
+    </div>
   </div>
   <div id="view-palmares" class="view">
     <div class="swrap mb14">
@@ -379,6 +398,8 @@ function render(){
   document.getElementById('stcard').style.display=has?'block':'none';
   document.getElementById('cgrid').style.display=has?'grid':'none';
   document.getElementById('dash-stats').style.display=has?'block':'none';
+  document.getElementById('stats-toggle').style.display=has?'block':'none';
+  if(has)renderCareerTables();
   var s=calcSt(ms);
   renderKPIs(s);
   if(has){renderStreak(ms);renderCharts(ms);}
@@ -802,6 +823,173 @@ function deleteCurSeason(){
   G.activeSeason=remaining[remaining.length-1];
   rebuildRivals();save();setupComp();render();renderTemps();
 }
+function toggleStats(mode){
+  document.getElementById('tog-seas').classList.toggle('on', mode==='season');
+  document.getElementById('tog-car').classList.toggle('on', mode==='career');
+  document.getElementById('dash-stats').style.display=mode==='season'?'block':'none';
+  document.getElementById('dash-career-stats').style.display=mode==='career'?'block':'none';
+}
+
+function renderCareerTables(){
+  // Gather all matches across all seasons
+  var allMs=[];
+  Object.keys(G.seasons).forEach(function(sn){allMs=allMs.concat(G.seasons[sn].matches||[]);});
+  if(!allMs.length){document.getElementById('dash-career-stats').innerHTML='';return;}
+
+  // All unique comps across all seasons
+  var allComps=[];
+  Object.keys(G.seasons).forEach(function(sn){
+    (G.seasons[sn].comps||[]).forEach(function(c){if(allComps.indexOf(c)===-1)allComps.push(c);});
+  });
+
+  var s=calcSt(allMs);
+  function mkRow(label,st,sub,bold){
+    var ep=efp(st.ef,st.pj),ec=efc(st.ef,st.pj);
+    return'<tr style="'+(sub?'background:var(--bg)':'')+'">'
+      +'<td style="'+(bold?'font-weight:800;font-size:13px':'')+'">'+(sub?'&nbsp;&nbsp;&nbsp;':'')+label+'</td>'
+      +'<td>'+st.pj+'</td><td style="color:#2EA84A">'+st.v+'</td><td>'+st.e+'</td>'
+      +'<td style="color:#F85149">'+st.d+'</td><td>'+st.gf+'</td><td>'+st.gc+'</td>'
+      +'<td>'+(st.pj?'<span class="ep" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span>':'—')+'</td></tr>';
+  }
+  function mkTbl(title,rows){
+    return'<div class="swrap mb14"><div class="shdr"><span class="stit">'+title+'</span></div>'
+      +'<div class="ovx"><table class="tbl"><thead><tr>'
+      +['Categoría','PJ','V','E','D','GF','GC','Efectiv.'].map(function(c){return'<th>'+c+'</th>';}).join('')
+      +'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  }
+
+  var html=mkTbl('🌐 Desempeño General · Carrera',mkRow('Total Carrera',s,false,true));
+
+  var condR=CONDS.map(function(cond){
+    return mkRow(CI[cond]+' '+cond,calcSt(allMs.filter(function(m){return m.cond===cond;})));
+  }).join('');
+  html+=mkTbl('🏠✈️ Local / Visitante / Neutral · Carrera',condR);
+
+  var compR='';
+  allComps.forEach(function(comp){
+    var cms=allMs.filter(function(m){return m.comp===comp;});
+    if(!cms.length)return;
+    compR+=mkRow((CB[comp]||'🏅')+' '+comp,calcSt(cms),false,true);
+    CONDS.forEach(function(cond){
+      var st=calcSt(cms.filter(function(m){return m.cond===cond;}));
+      if(st.pj>0)compR+=mkRow(CI[cond]+' '+cond,st,true,false);
+    });
+  });
+  html+=mkTbl('🏆 Por Competición · Carrera',compR);
+
+  document.getElementById('dash-career-stats').innerHTML=html;
+}
+
+function switchPlantTab(tab){
+  document.getElementById('ptab-seas').classList.toggle('on', tab==='season');
+  document.getElementById('ptab-career').classList.toggle('on', tab==='career');
+  document.getElementById('plant-season-view').style.display=tab==='season'?'block':'none';
+  document.getElementById('plant-career-view').style.display=tab==='career'?'block':'none';
+  if(tab==='career')renderCareerRoster();
+}
+
+function renderCareerRoster(){
+  var el=document.getElementById('career-roster-body');
+  // Aggregate all players across all seasons
+  var roster={};  // name -> {pos, seasons:{sn:{comp:{stat:val}}}}
+  Object.keys(G.seasons).forEach(function(sn){
+    (G.seasons[sn].players||[]).forEach(function(p){
+      if(!roster[p.name])roster[p.name]={pos:p.pos,seasons:{}};
+      roster[p.name].seasons[sn]=p.stats||{};
+    });
+  });
+
+  var names=Object.keys(roster);
+  if(!names.length){el.innerHTML='<div class="empty">No hay jugadores registrados en ninguna temporada</div>';return;}
+
+  // All comps ever played
+  var allComps=[];
+  Object.keys(G.seasons).forEach(function(sn){
+    (G.seasons[sn].comps||[]).forEach(function(c){if(allComps.indexOf(c)===-1)allComps.push(c);});
+  });
+
+  var ord=['FWD','MID','DEF','GK'];
+  var sorted=names.slice().sort(function(a,b){return ord.indexOf(roster[a].pos)-ord.indexOf(roster[b].pos);});
+
+  function totals(name){
+    var r=roster[name],tot={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+    Object.keys(r.seasons).forEach(function(sn){
+      Object.keys(r.seasons[sn]).forEach(function(comp){
+        var s=r.seasons[sn][comp]||{};
+        tot.partidos+=(s.partidos||0);
+        tot.goles+=(s.goles||0);
+        tot.asistencias+=(s.asistencias||0);
+        tot.gc+=(s.gc||0);
+        tot.imbatidas+=(s.imbatidas||0);
+      });
+    });
+    return tot;
+  }
+
+  function compTot(name,comp){
+    var r=roster[name],tot={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+    Object.keys(r.seasons).forEach(function(sn){
+      var s=(r.seasons[sn]&&r.seasons[sn][comp])||{};
+      tot.partidos+=(s.partidos||0);
+      tot.goles+=(s.goles||0);
+      tot.asistencias+=(s.asistencias||0);
+      tot.gc+=(s.gc||0);
+      tot.imbatidas+=(s.imbatidas||0);
+    });
+    return tot;
+  }
+
+  function mkHead(isGK){
+    var h='<th style="text-align:left;padding-left:14px;min-width:150px">Jugador</th>';
+    allComps.forEach(function(c){h+='<th colspan="'+(isGK?3:3)+'" style="border-left:1px solid #1E2530">'+c+'</th>';});
+    h+='<th colspan="'+(isGK?3:3)+'" style="border-left:1px solid #1E2530">Total Carrera</th>';
+    return'<tr>'+h+'</tr>';
+  }
+  function mkSub(isGK){
+    var h='<th></th>';
+    var sub=isGK?['PJ','GC','PI']:['PJ','G','A'];
+    var reps=allComps.length+1;
+    for(var i=0;i<reps;i++){sub.forEach(function(s,j){h+='<th style="color:#5A6578;font-size:9px;'+(j===0?'border-left:1px solid #1E2530':'')+'">'+s+'</th>';});}
+    return'<tr style="background:var(--bg)">'+h+'</tr>';
+  }
+  function mkRow(name){
+    var r=roster[name],isGK=r.pos==='GK';
+    var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+r.pos+'">'+PL[r.pos]+'</span> '+esc(name)+'</td>';
+    allComps.forEach(function(comp){
+      var ct=compTot(name,comp);
+      cells+='<td style="border-left:1px solid #1E253018">'+ct.partidos+'</td>';
+      if(isGK){cells+='<td style="color:#F85149">'+ct.gc+'</td><td style="color:#2EA84A">'+ct.imbatidas+'</td>';}
+      else{cells+='<td style="color:#E8B800">'+ct.goles+'</td><td style="color:#3A8EE8">'+ct.asistencias+'</td>';}
+    });
+    var tot=totals(name);
+    cells+='<td style="font-family:'Bebas Neue',sans-serif;font-size:15px;border-left:1px solid #1E253018">'+tot.partidos+'</td>';
+    if(isGK){
+      cells+='<td style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#F85149">'+tot.gc+'</td>';
+      cells+='<td style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#2EA84A">'+tot.imbatidas+'</td>';
+    }else{
+      cells+='<td style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#E8B800">'+tot.goles+'</td>';
+      cells+='<td style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#3A8EE8">'+tot.asistencias+'</td>';
+    }
+    // seasons played indicator
+    var sns=Object.keys(r.seasons);
+    cells+=''; // could add seasons count if desired
+    return'<tr>'+cells+'</tr>';
+  }
+
+  var gks=sorted.filter(function(n){return roster[n].pos==='GK';});
+  var out=sorted.filter(function(n){return roster[n].pos!=='GK';});
+  var html='';
+  if(out.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase">Jugadores de campo</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(false)+mkSub(false)+'</thead><tbody>'+out.map(mkRow).join('')+'</tbody></table></div>';
+  }
+  if(gks.length){
+    html+='<div style="font-size:10px;font-weight:800;color:#E8B800;letter-spacing:.08em;padding:10px 16px 4px;text-transform:uppercase;border-top:1px solid var(--bd)">Porteros</div>';
+    html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSub(true)+'</thead><tbody>'+gks.map(mkRow).join('')+'</tbody></table></div>';
+  }
+  el.innerHTML=html;
+}
+
 function exportData(){
   var blob=new Blob([JSON.stringify(G,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');
