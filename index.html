@@ -189,7 +189,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 <body>
 <div id="hdr">
   <div id="hl">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="cursor:pointer;flex-shrink:0" onclick="toggleClubMenu()">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="flex-shrink:0" >
   <defs><clipPath id="shield-clip"><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z"/></clipPath></defs>
   <path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="#CC0000" stroke="#fff" stroke-width="2"/>
   <rect x="4" y="4" width="23" height="112" fill="#CC0000" clip-path="url(#shield-clip)"/>
@@ -199,34 +199,19 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
   <path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="none" stroke="#8B0000" stroke-width="3"/>
   <text x="50" y="72" text-anchor="middle" font-family="serif" font-weight="bold" font-size="28" fill="#CC0000" stroke="#fff" stroke-width="3" paint-order="stroke">GFC</text>
 </svg>
-    <div style="cursor:pointer" onclick="toggleClubMenu()">
+    <div style="cursor:pointer" >
       <div class="htitle" id="hdr-club-name">GIRONA FC</div>
       <div class="hsub" id="hdr-club-sub">Modo Carrera &middot; FIFA 26</div>
     </div>
-    <span class="sbadge" onclick="sw('temporadas')" id="seas-badge" style="display:none">2025/26</span>
-    <div id="club-menu" style="display:none;position:absolute;top:62px;left:16px;background:#0F1318;border:1px solid #1E2530;border-radius:10px;z-index:200;min-width:200px;box-shadow:0 8px 24px #00000060">
-      <div style="padding:8px 0">
-        <div class="club-opt" id="copt-girona" onclick="switchClub('girona')" style="display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:background .12s">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="22" height="22"><defs><clipPath id="sc"><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z"/></clipPath></defs><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="#CC0000"/><rect x="4" y="4" width="23" height="112" fill="#CC0000" clip-path="url(#sc)"/><rect x="27" y="4" width="23" height="112" fill="#fff" clip-path="url(#sc)"/><rect x="50" y="4" width="23" height="112" fill="#CC0000" clip-path="url(#sc)"/><rect x="73" y="4" width="23" height="112" fill="#fff" clip-path="url(#sc)"/><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="none" stroke="#8B0000" stroke-width="3"/></svg>
-          <span style="font-weight:700;font-size:13px">Girona FC</span>
-        </div>
-        <div class="club-opt" id="copt-mexico" onclick="switchClub('mexico')" style="display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:background .12s">
-          <span style="font-size:20px">🇲🇽</span>
-          <span style="font-weight:700;font-size:13px">Selecci&oacute;n M&eacute;xico</span>
-        </div>
-      </div>
-    </div>
+    <span class="sbadge" onclick="sw('temporadas')" id="seas-badge">2025/26</span>
   </div>
   <div id="nav">
     <button class="nb on" onclick="sw('dashboard')">&#128202; Dashboard</button>
     <button class="nb" onclick="sw('partidos')">&#128203; Partidos</button>
     <button class="nb" onclick="sw('rivales')">&#9876;&#65039; Rivales</button>
-    <button class="nb club-girona" onclick="sw('plantilla')">&#128100; Plantilla</button>
-    <button class="nb club-girona" onclick="sw('palmares')">&#127942; Palmar&eacute;s</button>
-    <button class="nb club-girona" onclick="sw('temporadas')">&#128197; Temporadas</button>
-    <button class="nb club-mexico" style="display:none" onclick="sw('mx-scorers')">&#9917; Anotadores</button>
-    <button class="nb club-mexico" style="display:none" onclick="sw('mx-palmares')">&#127942; Palmar&eacute;s</button>
-    <button class="nb club-mexico" style="display:none" onclick="sw('mx-temporadas')">&#128197; A&ntilde;os</button>
+    <button class="nb" onclick="sw('plantilla')">&#128100; Plantilla</button>
+    <button class="nb" onclick="sw('palmares')">&#127942; Palmar&eacute;s</button>
+    <button class="nb" onclick="sw('temporadas')">&#128197; Temporadas</button>
     <div style="width:1px;background:var(--bd);margin:6px 4px"></div>
     <button class="nb" onclick="exportData()" title="Exportar">&#128190;</button>
     <label class="nb" style="cursor:pointer;margin:0">&#128229;<input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)"/></label>
@@ -332,12 +317,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
     </div>
     <div id="seas-list"></div>
   </div>
-</div>
-  <!-- MEXICO: PARTIDOS (reuses same form + partidos view, hidden for MX specific content) -->
-  <div id="view-mx-scorers" class="view">
-    <div class="swrap mb14">
-      <div class="shdr"><span class="stit">&#9917; Anotadores &amp; Asistidores &middot; M&eacute;xico</span><span class="smeta" id="mx-scorers-meta"></span></div>
-      <div class="fr" style="padding:12px 16px;border-bottom:1px solid var(--bd)">
+</div>      <div class="fr" style="padding:12px 16px;border-bottom:1px solid var(--bd)">
         <div class="fg" style="flex:1;min-width:130px"><label class="fl">Jugador</label><input type="text" id="mx-pname" placeholder="Nombre del jugador" maxlength="40"/></div>
         <button class="abtn red" onclick="addMxScorer()">+ Agregar</button>
       </div>
@@ -346,21 +326,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
     <div id="mx-tops"></div>
   </div>
 
-  <div id="view-mx-palmares" class="view">
-    <div class="swrap mb14">
-      <div class="shdr"><span class="stit">&#127942; Palmar&eacute;s &middot; M&eacute;xico</span><span class="smeta" id="mx-palm-cnt"></span></div>
-      <div id="mx-palm-wrap"></div>
-      <div class="atr">
-        <div class="fg" style="flex:1;min-width:120px"><label class="fl">Competici&oacute;n</label><input type="text" id="mxt-comp" placeholder="Ej: Copa Oro" maxlength="50"/></div>
-        <div class="fg"><label class="fl">A&ntilde;o</label><input type="text" id="mxt-seas" placeholder="Ej: 2026" maxlength="10"/></div>
-        <div class="fg" style="flex:1;min-width:100px"><label class="fl">Final vs</label><input type="text" id="mxt-rival" placeholder="Ej: Estados Unidos" maxlength="40"/></div>
-        <div class="fg"><label class="fl">Resultado</label><input type="text" id="mxt-score" placeholder="Ej: 2-1" maxlength="10"/></div>
-        <button class="abtn red" onclick="addMxTrophy()">+ Agregar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="view-mx-temporadas" class="view">
+ class="view">
     <div class="fc">
       <div class="fct">&#128197; A&ntilde;os &middot; M&eacute;xico</div>
       <div id="mx-seas-info" style="margin-bottom:14px"></div>
@@ -383,38 +349,17 @@ var CI={'Local':'🏠','Visitante':'✈️','Neutral':'⚖️'};
 var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'},'Champions':{i:'⭐',c:'#E8B800'},'Supercopa':{i:'🥇',c:'#E87820'},'Supercopa de España':{i:'🥇',c:'#E87820'}};
 
 var G={activeSeason:'2025/26',seasons:{},allRivals:{},career:{trophies:[]}};
-var MX={activeSeason:'2025',seasons:{},allRivals:{}};
-var activeClub='girona';  // 'girona' | 'mexico'
 var barC=null,lineC=null,confirmClear=false,activeRival=null;
 var plantSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
 var careerSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
 
-function save(){
-  try{localStorage.setItem(SK,JSON.stringify(G));}catch(e){}
-  try{localStorage.setItem(SK+'_mx',JSON.stringify(MX));}catch(e){}
-}
+function save(){try{localStorage.setItem(SK,JSON.stringify(G));}catch(e){}}
 function load(){
   try{var r=JSON.parse(localStorage.getItem(SK)||'null');if(r&&r.seasons)G=r;}catch(e){}
   if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey']);
   if(!G.career)G.career={trophies:[]};
   if(!G.career.trophies)G.career.trophies=[];
-  try{
-    var mx=JSON.parse(localStorage.getItem(SK+'_mx')||'null');
-    if(mx){
-      if(mx.seasons){
-        MX=mx; // new format
-      } else if(mx.matches){
-        // migrate old flat format -> season '2025'
-        MX.activeSeason='2025';
-        MX.seasons={'2025':{comps:mx.comps||[],matches:mx.matches||[],scorers:mx.scorers||[],trophies:[]}};
-        MX.allRivals=mx.allRivals||{};
-      }
-    }
-  }catch(e){}
-  if(!MX.seasons)MX.seasons={};
-  if(!MX.allRivals)MX.allRivals={};
-  if(!MX.activeSeason)MX.activeSeason='2025';
-  if(!MX.seasons[MX.activeSeason])initMxSeason(MX.activeSeason,[]);
+
 }
 function initSeason(n,comps){G.seasons[n]={comps:comps||['Liga','Copa del Rey'],matches:[],players:[],trophies:[]};}
 function getAS(){return G.seasons[G.activeSeason];}
@@ -445,30 +390,8 @@ function rebuildRivals(){
 
 function setupComp(){
   var s=document.getElementById('f-comp');s.innerHTML='';
-  var comps=activeClub==='mexico'?getMxComps():getComps();
+  var comps=getComps();
   comps.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o);});
-  // For Mexico, show a add-comp button if none
-  var fa=document.getElementById('form-area');
-  var existing=document.getElementById('mx-comp-add-row');
-  if(activeClub==='mexico'){
-    if(!existing){
-      var row=document.createElement('div');
-      row.id='mx-comp-add-row';
-      row.style.cssText='display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap';
-      row.innerHTML='<input type="text" id="mx-new-comp" placeholder="+ Nueva competición (Ej: Copa Oro)" maxlength="40" style="flex:1;min-width:150px;padding:7px 12px;font-size:12px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);border-radius:8px;outline:none">'
-        +'<button class="abtn" onclick="addMxCompFromInput()" style="white-space:nowrap">Agregar</button>';
-      fa.appendChild(row);
-    } else existing.style.display='flex';
-  } else {
-    if(existing)existing.style.display='none';
-  }
-}
-function addMxCompFromInput(){
-  var v=document.getElementById('mx-new-comp').value.trim();
-  if(!v)return;
-  addMxComp(v);
-  document.getElementById('mx-new-comp').value='';
-  renderMxScorers();
 }
 
 function addMatch(){
@@ -502,33 +425,22 @@ function doClear(){getAS().matches=[];confirmClear=false;rebuildRivals();save();
 
 function sw(v){
   document.querySelectorAll('.view').forEach(function(el){el.classList.remove('on');});
-  var viewEl=document.getElementById('view-'+v);
-  if(viewEl)viewEl.classList.add('on');
+  document.getElementById('view-'+v).classList.add('on');
   var keys=['dashboard','partidos','rivales','plantilla','palmares','temporadas'];
   document.querySelectorAll('.nb').forEach(function(b,i){b.classList.toggle('on',keys[i]===v);});
-  // also handle mexico nav
-  document.querySelectorAll('.club-mexico').forEach(function(b){
-    b.classList.toggle('on', b.getAttribute('onclick')==="sw('mx-scorers')" && v==='mx-scorers');
-  });
-  var showForm=(v==='dashboard'||v==='partidos');
-  document.getElementById('form-area').style.display=showForm?'block':'none';
+  document.getElementById('form-area').style.display=(v==='dashboard'||v==='partidos')?'block':'none';
   if(v==='rivales'){activeRival=null;renderRivales();}
   if(v==='temporadas')renderTemps();
-  if(v==='mx-scorers')renderMxScorers();
-  if(v==='mx-temporadas')renderMxTemps();
-  if(v==='mx-palmares')renderMxPalmares();
-  if(v==='dashboard'&&activeClub==='mexico')renderMxDash();
 }
 
 function render(){
-  if(activeClub==='mexico'){renderMxDash();return;}
   var ms=getMs(),has=ms.length>0;
   document.getElementById('dash-empty').style.display=has?'none':'block';
   document.getElementById('stcard').style.display=has?'block':'none';
   document.getElementById('cgrid').style.display=has?'grid':'none';
   document.getElementById('dash-stats').style.display=has?'block':'none';
-  document.getElementById('stats-toggle').style.display=(has&&activeClub==='girona')?'block':'none';
-  if(has&&activeClub==='girona')renderCareerTables();
+  document.getElementById('stats-toggle').style.display=has?'block':'none';
+  if(has)renderCareerTables();
   var s=calcSt(ms);
   renderKPIs(s);
   if(has){renderStreak(ms);renderCharts(ms);}
@@ -574,7 +486,7 @@ function renderStreak(ms){
 }
 
 function renderCharts(ms){
-  var comps=activeClub==='mexico'?getMxComps():getComps();
+  var comps=getComps();
   var bd=comps.map(function(c){var st=calcSt(ms.filter(function(m){return m.comp===c;}));return{c:c,v:st.v,e:st.e,d:st.d};});
   if(barC){barC.destroy();barC=null;}
   barC=new Chart(document.getElementById('chart-bar').getContext('2d'),{type:'bar',
@@ -599,7 +511,7 @@ function renderCharts(ms){
 }
 
 function renderTables(s,ms){
-  var comps=activeClub==='mexico'?getMxComps():getComps();
+  var comps=getComps();
   function mkRow(label,st,sub,bold){
     var ep=efp(st.ef,st.pj),ec=efc(st.ef,st.pj);
     return'<tr style="'+(sub?'background:var(--bg)':'')+'">'
@@ -631,7 +543,7 @@ function renderTables(s,ms){
 }
 
 function renderPartidos(){
-  var ms=activeClub==='mexico'?getMxMs():getMs(),cnt=ms.length;
+  var ms=getMs(),cnt=ms.length;
   document.getElementById('pcnt').textContent='📋 Historial · '+cnt+' partido'+(cnt!==1?'s':'');
   var ca=document.getElementById('clear-area');
   if(!cnt)ca.innerHTML='';
@@ -657,9 +569,8 @@ function renderPartidos(){
 
 function renderRivales(){
   var el=document.getElementById('rbody');
-  var rivalData=activeClub==='mexico'?MX.allRivals:G.allRivals;
-  var rivals=Object.keys(rivalData).map(function(n){
-    var ms2=rivalData[n];
+  var rivals=Object.keys(G.allRivals).map(function(n){
+    var ms2=G.allRivals[n];
     return{name:n,ms:ms2,stats:calcSt(ms2.map(function(x){return{gf:x.gf,gc:x.gc,result:x.result};}))};
   }).sort(function(a,b){return b.stats.pj-a.stats.pj;});
   if(!rivals.length){el.innerHTML='<div class="swrap"><div class="shdr"><span class="stit">⚔️ Rivales</span></div><div class="empty">Registra partidos con nombre de rival</div></div>';return;}
@@ -1002,9 +913,7 @@ function toggleStats(mode){
   document.getElementById('tog-car').classList.toggle('on', mode==='career');
   document.getElementById('dash-stats').style.display=mode==='season'?'block':'none';
   document.getElementById('dash-career-stats').style.display=mode==='career'?'block':'none';
-  if(mode==='career'){
-    if(activeClub==='mexico')renderMxCareerTables(); else renderCareerTables();
-  }
+  if(mode==='career')renderCareerTables();
 }
 
 function renderCareerTables(){
@@ -1188,428 +1097,11 @@ function renderCareerRoster(){
   el.innerHTML=html;
 }
 
-// ── CLUB SWITCHING ──
-var clubMenuOpen=false;
-function toggleClubMenu(){
-  clubMenuOpen=!clubMenuOpen;
-  document.getElementById('club-menu').style.display=clubMenuOpen?'block':'none';
-  if(clubMenuOpen){
-    setTimeout(function(){document.addEventListener('click',closeClubMenu,{once:true});},10);
-  }
-}
-function closeClubMenu(){clubMenuOpen=false;document.getElementById('club-menu').style.display='none';}
-
-var CLUBS={
-  girona:{name:'GIRONA FC',sub:'Modo Carrera · FIFA 26',crest:'https://upload.wikimedia.org/wikipedia/en/b/b9/Girona_FC_badge.svg',color:'#CC0000'},
-  mexico:{name:'SELECCIÓN MÉXICO',sub:'Modo Carrera · FIFA 26',crest:'',color:'#006847'}
-};
-
-function switchClub(club){
-  activeClub=club;
-  closeClubMenu();
-  var info=CLUBS[club];
-  document.getElementById('hdr-club-name').textContent=info.name;
-  document.getElementById('hdr-club-sub').textContent=info.sub;
-  var crest=document.getElementById('hcrest');
-  if(club==='mexico'){
-    crest.style.display='none';
-    var existing=document.getElementById('hdr-flag');
-    if(!existing){
-      var flag=document.createElement('span');
-      flag.id='hdr-flag';flag.textContent='🇲🇽';flag.style.cssText='font-size:32px;cursor:pointer';
-      flag.onclick=toggleClubMenu;
-      crest.parentNode.insertBefore(flag,crest);
-    } else existing.style.display='inline';
-  } else {
-    crest.style.display='inline';
-    var flag=document.getElementById('hdr-flag');
-    if(flag)flag.style.display='none';
-  }
-  // header accent color
-  document.getElementById('hdr').style.borderBottomColor=info.color+'60';
-  // Toggle season badge
-  document.getElementById('seas-badge').style.display=club==='girona'?'inline':'none';
-  // Toggle nav buttons
-  document.querySelectorAll('.club-girona').forEach(function(b){b.style.display=club==='girona'?'':' none';});
-  document.querySelectorAll('.club-mexico').forEach(function(b){b.style.display=club==='mexico'?'':'none';});
-  // Update copt active states
-  document.getElementById('copt-girona').style.background=club==='girona'?'#CC000020':'';
-  document.getElementById('copt-mexico').style.background=club==='mexico'?'#00684720':'';
-  // Switch to appropriate default view
-  setupComp();
-  // update badge
-  var badge=document.getElementById('seas-badge');
-  if(club==='mexico'){badge.textContent=MX.activeSeason;badge.style.display='inline';}
-  else{badge.textContent=G.activeSeason;badge.style.display='inline';}
-  sw('dashboard');
-}
-
-// ── MEXICO SEASON HELPERS ──
-function initMxSeason(name,comps){MX.seasons[name]={comps:comps||[],matches:[],scorers:[],trophies:[]};}
-function getMxAS(){return MX.seasons[MX.activeSeason];}
-function getMxMs(){return getMxAS().matches||[];}
-function getMxComps(){var c=getMxAS().comps||[];return c.length?c:['Amistoso'];}
-function getMxScorers(){return getMxAS().scorers||[];}
-
-function addMxComp(comp){
-  var comps=getMxAS().comps||[];
-  if(!comp||comps.indexOf(comp)!==-1)return;
-  comps.push(comp);getMxAS().comps=comps;save();setupComp();
-}
-
-// Override addMatch and removeMatch to be club-aware
-var _origAddMatch=null; // we'll wrap instead
-
-function addMxScorer(){
-  var nm=document.getElementById('mx-pname').value.trim();
-  if(!nm)return;
-  var scorers=getMxScorers();
-  if(scorers.some(function(p){return p.name.toLowerCase()===nm.toLowerCase();})){
-    var el=document.getElementById('mx-pname');el.style.borderColor='#F85149';
-    setTimeout(function(){el.style.borderColor='';},1200);return;
-  }
-  var stats={};getMxComps().forEach(function(c){stats[c]={goles:0,asistencias:0};});
-  scorers.push({id:Date.now(),name:nm,stats:stats});
-  getMxAS().scorers=scorers;
-  save();document.getElementById('mx-pname').value='';
-  renderMxScorers();
-}
-function removeMxScorer(id){
-  getMxAS().scorers=getMxScorers().filter(function(p){return p.id!==id;});
-  save();renderMxScorers();
-}
-function upMxStat(id,comp,stat,val){
-  var v=parseInt(val);if(isNaN(v)||v<0)v=0;
-  var p=getMxScorers().find(function(p){return p.id===id;});if(!p)return;
-  if(!p.stats[comp])p.stats[comp]={goles:0,asistencias:0};
-  p.stats[comp][stat]=v;save();renderMxTops();
-}
-
-function renderMxScorers(){
-  var ps=getMxScorers(),comps=getMxComps();
-  var el=document.getElementById('mx-scorers-body');
-  document.getElementById('mx-scorers-meta').textContent=ps.length+' jugador'+(ps.length!==1?'es':'');
-  if(!ps.length){el.innerHTML='<div class="empty">Agrega jugadores con el formulario de arriba</div>';return;}
-
-  // sort by total goals desc
-  var sorted=ps.slice().sort(function(a,b){
-    var ag=Object.keys(a.stats||{}).reduce(function(s,c){return s+(a.stats[c].goles||0);},0);
-    var bg=Object.keys(b.stats||{}).reduce(function(s,c){return s+(b.stats[c].goles||0);},0);
-    return bg-ag;
-  });
-
-  var thead='<tr><th style="text-align:left;padding-left:14px;min-width:150px">Jugador</th>'
-    +comps.map(function(c){return'<th colspan="2" style="border-left:1px solid #1E2530">'+esc(c)+'</th>';}).join('')
-    +'<th colspan="2" style="border-left:1px solid #1E2530">Total</th><th></th></tr>';
-  var subhead='<tr style="background:var(--bg)"><th></th>'
-    +comps.map(function(c,i){return'<th style="color:#5A6578;font-size:9px;border-left:1px solid #1E2530">G</th><th style="color:#5A6578;font-size:9px">A</th>';}).join('')
-    +'<th style="color:#5A6578;font-size:9px;border-left:1px solid #1E2530">G</th><th style="color:#5A6578;font-size:9px">A</th>'
-    +'<th></th></tr>';
-
-  var rows=sorted.map(function(p){
-    var totG=0,totA=0;
-    var cells='<td style="padding-left:14px;font-weight:700">'+esc(p.name)+'</td>';
-    comps.forEach(function(comp){
-      var cs=p.stats&&p.stats[comp]?p.stats[comp]:{goles:0,asistencias:0};
-      totG+=cs.goles||0;totA+=cs.asistencias||0;
-      cells+='<td style="border-left:1px solid #1E253018"><input class="pi mx-input" type="number" min="0" max="999" value="'+(cs.goles||0)+'" data-pid="'+p.id+'" data-cidx="'+comps.indexOf(comp)+'" data-stat="goles"/></td>';
-      cells+='<td><input class="pi mx-input" type="number" min="0" max="999" value="'+(cs.asistencias||0)+'" data-pid="'+p.id+'" data-cidx="'+comps.indexOf(comp)+'" data-stat="asistencias"/></td>';
-    });
-    cells+='<td style="font-weight:700;font-size:15px;color:#E8B800;border-left:1px solid #1E253018">'+totG+'</td>';
-    cells+='<td style="font-weight:700;font-size:15px;color:#3A8EE8">'+totA+'</td>';
-    cells+='<td><button class="del-btn" onclick="removeMxScorer('+p.id+')">✕</button></td>';
-    return'<tr>'+cells+'</tr>';
-  }).join('');
-
-  el.innerHTML='<div class="ovx"><table class="tbl"><thead>'+thead+subhead+'</thead><tbody>'+rows+'</tbody></table></div>';
-  // Event delegation for mx inputs
-  el.querySelectorAll('.mx-input').forEach(function(inp){
-    inp.addEventListener('input',function(){
-      var pid=parseInt(this.dataset.pid);
-      var comp=getMxComps()[parseInt(this.dataset.cidx)];
-      var stat=this.dataset.stat;
-      upMxStat(pid,comp,stat,this.value);
-    });
-  });
-  renderMxTops();
-}
-
-function renderMxTops(){
-  var el=document.getElementById('mx-tops');
-  // Season tops
-  var ps=getMxScorers();
-  function topN(stat,n,scorerList){
-    return scorerList.map(function(p){
-      var tot=Object.keys(p.stats||{}).reduce(function(s,c){return s+((p.stats[c]&&p.stats[c][stat])||0);},0);
-      return{name:p.name,val:tot};
-    }).filter(function(x){return x.val>0;}).sort(function(a,b){return b.val-a.val;}).slice(0,n);
-  }
-  // Career tops: aggregate by name across all seasons
-  var careerMap={};
-  Object.keys(MX.seasons).forEach(function(sn){
-    (MX.seasons[sn].scorers||[]).forEach(function(p){
-      if(!careerMap[p.name])careerMap[p.name]={goles:0,asistencias:0};
-      Object.keys(p.stats||{}).forEach(function(c){
-        careerMap[p.name].goles+=(p.stats[c].goles||0);
-        careerMap[p.name].asistencias+=(p.stats[c].asistencias||0);
-      });
-    });
-  });
-  var careerList=Object.keys(careerMap).map(function(n){return{name:n,goles:careerMap[n].goles,asistencias:careerMap[n].asistencias};});
-  function topCareer(stat,n){return careerList.map(function(p){return{name:p.name,val:p[stat]};}).filter(function(x){return x.val>0;}).sort(function(a,b){return b.val-a.val;}).slice(0,n);}
-
-  var html='';
-  if(ps.length){
-    html+='<div class="swrap mb14"><div class="shdr"><span class="stit">🏅 Top · Temporada '+MX.activeSeason+'</span></div>'
-      +'<div class="tgrid" style="padding:12px 14px">'
-      +mkTopCard('⚽ Goleadores',topN('goles',5,ps),'goles')
-      +mkTopCard('🎯 Asistencias',topN('asistencias',5,ps),'asist.')
-      +'</div></div>';
-  }
-  var sns=Object.keys(MX.seasons);
-  if(sns.length>1||careerList.some(function(x){return x.goles>0||x.asistencias>0;})){
-    html+='<div class="swrap"><div class="shdr"><span class="stit">🌟 Top · Carrera México</span></div>'
-      +'<div class="tgrid" style="padding:12px 14px">'
-      +mkTopCard('⚽ Goleadores',topCareer('goles',5),'goles')
-      +mkTopCard('🎯 Asistencias',topCareer('asistencias',5),'asist.')
-      +'</div></div>';
-  }
-  el.innerHTML=html;
-}
-
-// Hook render() to also render MX views when active
-var _origRender=null;
-
-function renderMxDash(){
-  // For Mexico, dashboard shows stats + rivals
-  document.getElementById('form-area').style.display='block';
-  var ms=getMxMs(),has=ms.length>0;
-  document.getElementById('dash-empty').style.display=has?'none':'block';
-  document.getElementById('stcard').style.display=has?'block':'none';
-  document.getElementById('cgrid').style.display=has?'grid':'none';
-  document.getElementById('dash-stats').style.display=has?'block':'none';
-  document.getElementById('dash-career-stats').style.display='none';
-  document.getElementById('stats-toggle').style.display=has?'block':'none';
-  document.getElementById('dash-tops').style.display='none';
-  if(has)renderMxCareerTables();
-  if(!has){renderKPIs({pj:0,v:0,e:0,d:0,gf:0,gc:0,pts:0,ef:0});return;}
-  var s=calcSt(ms);
-  renderKPIs(s);
-  renderStreak(ms);
-  renderCharts(ms);
-  renderTables(s,ms);
-  renderPartidos();
-}
-
-// Patch addMatch to route to MX when active
-var _addMatchOrig=addMatch;
-addMatch=function(){
-  if(activeClub!=='mexico'){_addMatchOrig();return;}
-  var gf=parseInt(document.getElementById('f-gf').value);
-  var gc=parseInt(document.getElementById('f-gc').value);
-  var err=document.getElementById('form-err');
-  if(isNaN(gf)||isNaN(gc)||gf<0||gc<0){err.textContent='Ingresa goles válidos';return;}
-  err.textContent='';
-  var m={id:Date.now(),comp:document.getElementById('f-comp').value,cond:document.getElementById('f-cond').value,
-    rival:document.getElementById('f-rival').value.trim(),gf:gf,gc:gc,result:gf>gc?'V':gf===gc?'E':'D'};
-  getMxAS().matches.push(m);
-  if(m.rival){if(!MX.allRivals[m.rival])MX.allRivals[m.rival]=[];
-    MX.allRivals[m.rival].push({season:MX.activeSeason,comp:m.comp,cond:m.cond,gf:m.gf,gc:m.gc,result:m.result});}
-  save();
-  document.getElementById('f-gf').value='';document.getElementById('f-gc').value='';document.getElementById('f-rival').value='';
-  document.getElementById('f-gf').focus();
-  var btn=document.getElementById('save-btn');btn.textContent='✓ Guardado';btn.classList.add('ok');
-  setTimeout(function(){btn.textContent='Guardar';btn.classList.remove('ok');},1400);
-  render();
-};
-
-// Patch removeMatch for MX
-var _removeMatchOrig=removeMatch;
-removeMatch=function(id){
-  if(activeClub!=='mexico'){_removeMatchOrig(id);return;}
-  getMxAS().matches=getMxMs().filter(function(m){return m.id!==id;});
-  // rebuild MX rivals
-  MX.allRivals={};
-  Object.keys(MX.seasons).forEach(function(sn){(MX.seasons[sn].matches||[]).forEach(function(m){
-    if(!m.rival)return;
-    if(!MX.allRivals[m.rival])MX.allRivals[m.rival]=[];
-    MX.allRivals[m.rival].push({season:sn,comp:m.comp,cond:m.cond,gf:m.gf,gc:m.gc,result:m.result});
-  });});
-  save();render();renderPartidos();
-};
-
-function createMxSeason(){
-  var name=document.getElementById('mx-nsn').value.trim();
-  if(!name){return;}
-  if(MX.seasons[name]){alert('Esa temporada ya existe');return;}
-  initMxSeason(name,[]);MX.activeSeason=name;
-  document.getElementById('mx-nsn').value='';
-  save();setupComp();render();renderMxTemps();sw('dashboard');
-}
-function switchToMxSeason(name){MX.activeSeason=name;save();setupComp();document.getElementById('seas-badge').textContent=name;render();renderMxTemps();sw('dashboard');}
-function deleteMxCurSeason(){
-  var sns=Object.keys(MX.seasons);
-  if(sns.length<=1){alert('No puedes borrar la única temporada.');return;}
-  var cur=MX.activeSeason,ms=(MX.seasons[cur]&&MX.seasons[cur].matches)||[];
-  if(!confirm('¿Borrar temporada '+cur+'?'+(ms.length?' Tiene '+ms.length+' partidos.':'')))return;
-  delete MX.seasons[cur];
-  var remaining=Object.keys(MX.seasons);
-  MX.activeSeason=remaining[remaining.length-1];
-  save();setupComp();render();renderMxTemps();
-}
-function renderMxTemps(){
-  var sns=Object.keys(MX.seasons);
-  var cur=getMxAS(),ms=cur.matches||[],s=calcSt(ms);
-  document.getElementById('mx-seas-info').innerHTML=
-    '<div style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;display:flex;gap:14px;flex-wrap:wrap;align-items:center">'
-    +'<span style="font-family:\'Bebas Neue\',sans-serif;font-size:16px;color:#E8B800">'+MX.activeSeason+'</span>'
-    +'<span style="font-size:12px;color:#5A6578">'+(cur.comps.length?cur.comps.join(', '):'Sin competiciones')+'</span>'
-    +'<span style="font-size:12px">'+ms.length+' partidos</span>'
-    +'<span style="font-size:12px;color:#2EA84A">'+s.v+'V</span>'
-    +'<span style="font-size:12px">'+s.e+'E</span>'
-    +'<span style="font-size:12px;color:#F85149">'+s.d+'D</span>'
-    +'<span style="font-size:12px;color:#E8B800">'+efp(s.ef,s.pj)+'</span>'
-    +'<button onclick="deleteMxCurSeason()" style="margin-left:auto;padding:5px 12px;border-radius:7px;border:1px solid #F8514940;background:transparent;color:#F85149;font-size:11px;font-weight:700;cursor:pointer">🗑 Borrar</button>'
-    +'</div>';
-
-  var listEl=document.getElementById('mx-seas-list');
-  // Career totals
-  var allMs=[];Object.keys(MX.seasons).forEach(function(sn){allMs=allMs.concat(MX.seasons[sn].matches||[]);});
-  var cs=calcSt(allMs);
-  var html='';
-
-  if(sns.length>1){
-    html+='<div class="swrap" style="margin-top:14px"><div class="shdr"><span class="stit">📅 Historial de temporadas</span></div>'
-      +'<div class="sumg" style="padding:14px">';
-    sns.slice().reverse().forEach(function(sn){
-      var sd=MX.seasons[sn],ms2=sd.matches||[],st=calcSt(ms2),isCur=sn===MX.activeSeason;
-      html+='<div class="sumc" style="'+(isCur?'border-color:var(--red)':'')+'">'
-        +'<div class="sumh"><span class="sumsn">'+esc(sn)+(isCur?' <span style="font-size:10px;color:#CC0000;font-weight:700">ACTUAL</span>':'')+'</span>'
-        +'<span class="sumco">'+(sd.comps.length?sd.comps.join(' · '):'—')+'</span></div>'
-        +'<div class="sumb">'
-        +[['Partidos',ms2.length],['Victorias',st.v],['Empates',st.e],['Derrotas',st.d],
-          ['Goles',st.gf+'–'+st.gc],['Efectividad',efp(st.ef,st.pj)]]
-          .map(function(r){return'<div class="sumr"><span class="sumk">'+r[0]+'</span><span class="sumv">'+r[1]+'</span></div>';}).join('')
-        +'</div>'
-        +(!isCur?'<div style="padding:10px 14px;border-top:1px solid var(--bd)"><button class="abtn" onclick="switchToMxSeason(\''+sn+'\')">Ver temporada</button></div>':'')
-        +'</div>';
-    });
-    html+='</div></div>';
-  }
-
-  html+='<div class="swrap" style="margin-top:14px"><div class="shdr"><span class="stit">🌐 Carrera México</span></div>'
-    +'<div style="display:flex;gap:10px;flex-wrap:wrap;padding:14px">'
-    +[['🎮 Partidos',allMs.length],['✅ Victorias',cs.v],['🤝 Empates',cs.e],['❌ Derrotas',cs.d],
-      ['⚽ Goles',cs.gf+'–'+cs.gc],['📈 Efectividad',efp(cs.ef,cs.pj)],['📅 Temporadas',sns.length]]
-      .map(function(r){
-        return'<div style="background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;min-width:90px">'
-          +'<div style="font-size:10px;color:#5A6578;margin-bottom:3px">'+r[0]+'</div>'
-          +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:20px">'+r[1]+'</div></div>';
-      }).join('')
-    +'</div></div>';
-
-  listEl.innerHTML=html;
-}
-
-function renderMxCareerTables(){
-  var allMs=[];
-  Object.keys(MX.seasons).forEach(function(sn){allMs=allMs.concat(MX.seasons[sn].matches||[]);});
-  var allComps=[];
-  Object.keys(MX.seasons).forEach(function(sn){(MX.seasons[sn].comps||[]).forEach(function(c){if(allComps.indexOf(c)===-1)allComps.push(c);});});
-  if(!allMs.length){document.getElementById('dash-career-stats').innerHTML='';return;}
-  var s=calcSt(allMs);
-  function mkRow(label,st,sub,bold){
-    var ep=efp(st.ef,st.pj),ec=efc(st.ef,st.pj);
-    return'<tr style="'+(sub?'background:var(--bg)':'')+'">'
-      +'<td style="'+(bold?'font-weight:800;font-size:13px':'')+'">'+(sub?'&nbsp;&nbsp;&nbsp;':'')+label+'</td>'
-      +'<td>'+st.pj+'</td><td style="color:#2EA84A">'+st.v+'</td><td>'+st.e+'</td>'
-      +'<td style="color:#F85149">'+st.d+'</td><td>'+st.gf+'</td><td>'+st.gc+'</td>'
-      +'<td>'+(st.pj?'<span class="ep" style="background:'+ec+'22;color:'+ec+'">'+ep+'</span>':'—')+'</td></tr>';
-  }
-  function mkTbl(title,rows){
-    return'<div class="swrap mb14"><div class="shdr"><span class="stit">'+title+'</span></div>'
-      +'<div class="ovx"><table class="tbl"><thead><tr>'
-      +['Categoría','PJ','V','E','D','GF','GC','Efectiv.'].map(function(c){return'<th>'+c+'</th>';}).join('')
-      +'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
-  }
-  var html=mkTbl('🌐 General · Carrera México',mkRow('Total Carrera',s,false,true));
-  var condR=CONDS.map(function(cond){return mkRow(CI[cond]+' '+cond,calcSt(allMs.filter(function(m){return m.cond===cond;})));}).join('');
-  html+=mkTbl('🏠✈️ Local / Visitante / Neutral · Carrera',condR);
-  var compR='';
-  allComps.forEach(function(comp){
-    var cms=allMs.filter(function(m){return m.comp===comp;});if(!cms.length)return;
-    compR+=mkRow((CB[comp]||'🏅')+' '+comp,calcSt(cms),false,true);
-    CONDS.forEach(function(cond){var st=calcSt(cms.filter(function(m){return m.cond===cond;}));if(st.pj>0)compR+=mkRow(CI[cond]+' '+cond,st,true,false);});
-  });
-  if(compR)html+=mkTbl('🏆 Por Competición · Carrera',compR);
-  document.getElementById('dash-career-stats').innerHTML=html;
-}
-
-function getMxTrophies(){
-  var all=[];
-  Object.keys(MX.seasons).forEach(function(sn){
-    (MX.seasons[sn].trophies||[]).forEach(function(t){all.push(Object.assign({},t,{_season:sn}));});
-  });
-  return all;
-}
-function addMxTrophy(){
-  var comp=document.getElementById('mxt-comp').value.trim();
-  var seas=document.getElementById('mxt-seas').value.trim();
-  var rival=document.getElementById('mxt-rival').value.trim();
-  var score=document.getElementById('mxt-score').value.trim();
-  if(!comp||!seas)return;
-  var sn=seas;
-  if(!MX.seasons[sn])initMxSeason(sn,[]);
-  if(!MX.seasons[sn].trophies)MX.seasons[sn].trophies=[];
-  MX.seasons[sn].trophies.push({id:Date.now(),comp:comp,season:seas,rival:rival,score:score});
-  save();
-  ['mxt-comp','mxt-seas','mxt-rival','mxt-score'].forEach(function(id){document.getElementById(id).value='';});
-  renderMxPalmares();
-}
-function removeMxTrophy(seasonKey,id){
-  if(!MX.seasons[seasonKey]||!MX.seasons[seasonKey].trophies)return;
-  MX.seasons[seasonKey].trophies=MX.seasons[seasonKey].trophies.filter(function(t){return t.id!==id;});
-  save();renderMxPalmares();
-}
-function renderMxPalmares(){
-  var trs=getMxTrophies();
-  var cntEl=document.getElementById('mx-palm-cnt');
-  var wrap=document.getElementById('mx-palm-wrap');
-  if(!cntEl||!wrap)return;
-  cntEl.textContent=trs.length+' título'+(trs.length!==1?'s':'');
-  if(!trs.length){wrap.innerHTML='<div class="empty">Aún no hay títulos — agrega uno abajo</div>';return;}
-  var grouped={};
-  trs.forEach(function(t){if(!grouped[t.comp])grouped[t.comp]=[];grouped[t.comp].push(t);});
-  var summary='<div style="display:flex;gap:8px;flex-wrap:wrap;padding:14px 16px 0">';
-  Object.keys(grouped).forEach(function(comp){
-    var def=TDEF[comp]||{i:'🏅',c:'#E8B800'};
-    summary+='<div style="background:var(--bg);border:1px solid '+def.c+'40;border-radius:8px;padding:5px 12px;display:flex;align-items:center;gap:6px">'
-      +'<span>'+def.i+'</span><span style="font-weight:800;font-size:13px;color:'+def.c+'">'+grouped[comp].length+'</span>'
-      +'<span style="font-size:11px;color:#5A6578">'+esc(comp)+'</span></div>';
-  });
-  summary+='</div>';
-  var cards='<div class="pgrid" style="padding:14px 16px">';
-  trs.slice().reverse().forEach(function(t){
-    var def=TDEF[t.comp]||{i:'🏅',c:'#E8B800'};
-    cards+='<div class="pcard" style="border-color:'+def.c+'30">'
-      +'<div class="pci">'+def.i+'</div>'
-      +'<div class="pcn">'+esc(t.comp)+'</div>'
-      +'<div class="pcs">'+esc(t.season)+'</div>'
-      +(t.rival?'<div class="pcr">vs '+esc(t.rival)+(t.score?' · '+esc(t.score):'')+'</div>':'')
-      +'<button class="del-btn" onclick="removeMxTrophy(\''+t._season+'\','+t.id+')">✕</button>'
-      +'</div>';
-  });
-  cards+='</div>';
-  wrap.innerHTML=summary+cards;
-}
-
 function exportData(){
-  var d=new Date(),ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  var data=activeClub==='mexico'?MX:G;
-  var name=activeClub==='mexico'?'mexico_carrera_':'girona_carrera_';
-  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var blob=new Blob([JSON.stringify(G,null,2)],{type:'application/json'});
   var url=URL.createObjectURL(blob);var a=document.createElement('a');
-  a.href=url;a.download=name+ds+'.json';
+  var d=new Date();
+  a.href=url;a.download='girona_carrera_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'.json';
   a.click();URL.revokeObjectURL(url);
 }
 function importData(e){
