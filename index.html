@@ -398,7 +398,19 @@ function load(){
   if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey']);
   if(!G.career)G.career={trophies:[]};
   if(!G.career.trophies)G.career.trophies=[];
-  try{var mx=JSON.parse(localStorage.getItem(SK+'_mx')||'null');if(mx&&mx.seasons)MX=mx;}catch(e){}
+  try{
+    var mx=JSON.parse(localStorage.getItem(SK+'_mx')||'null');
+    if(mx){
+      if(mx.seasons){
+        MX=mx; // new format
+      } else if(mx.matches){
+        // migrate old flat format -> season '2025'
+        MX.activeSeason='2025';
+        MX.seasons={'2025':{comps:mx.comps||[],matches:mx.matches||[],scorers:mx.scorers||[],trophies:[]}};
+        MX.allRivals=mx.allRivals||{};
+      }
+    }
+  }catch(e){}
   if(!MX.seasons)MX.seasons={};
   if(!MX.allRivals)MX.allRivals={};
   if(!MX.activeSeason)MX.activeSeason='2025';
@@ -1371,7 +1383,7 @@ var _origRender=null;
 function renderMxDash(){
   // For Mexico, dashboard shows stats + rivals
   document.getElementById('form-area').style.display='block';
-  var ms=MX.matches,has=ms.length>0;
+  var ms=getMxMs(),has=ms.length>0;
   document.getElementById('dash-empty').style.display=has?'none':'block';
   document.getElementById('stcard').style.display=has?'block':'none';
   document.getElementById('cgrid').style.display=has?'grid':'none';
