@@ -184,6 +184,24 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
   .mcard{grid-template-columns:22px 1fr 84px 1fr 36px;padding:6px 8px}
   .mc-name{font-size:12px}
 }
+.pm-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.pm-kpi{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;min-width:80px;text-align:center}
+.pm-kv{font-family:'Bebas Neue',sans-serif;font-size:22px;line-height:1}
+.pm-kl{font-size:10px;color:#5A6578;margin-top:2px;letter-spacing:.06em;text-transform:uppercase}
+.pm-sec{margin-bottom:18px}
+.pm-sec-title{font-size:10px;color:#5A6578;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.pm-comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.pm-comp-card{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+.pm-comp-name{font-size:10px;font-weight:700;margin-bottom:6px}
+.pm-comp-stats{display:flex;gap:10px;flex-wrap:wrap}
+.pm-comp-stat{font-size:12px}
+.pm-seas-table{width:100%;border-collapse:collapse;font-size:12px}
+.pm-seas-table th{color:#5A6578;font-size:10px;text-align:center;padding:5px 8px;border-bottom:1px solid var(--bd);text-transform:uppercase;letter-spacing:.06em}
+.pm-seas-table th:first-child{text-align:left}
+.pm-seas-table td{padding:7px 8px;border-bottom:1px solid #1E253018;text-align:center}
+.pm-seas-table td:first-child{text-align:left;font-weight:700}
+.pm-seas-table tr:last-child td{border-bottom:none}
+.pm-seas-table tr.pm-total td{background:var(--bg);font-weight:800;border-top:1px solid var(--bd)}
 </style>
 </head>
 <body>
@@ -720,7 +738,7 @@ function renderPlantilla(){
   function mkRow(p){
     var isGK=p.pos==='GK',st=p.stats||{};
     var totPJ=0,totG=0,totA=0,totGC=0,totPI=0;
-    var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+p.pos+'">'+PL[p.pos]+'</span> '+esc(p.name)+'</td>';
+    var safePName=p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+p.pos+'">'+PL[p.pos]+'</span> <span style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#3A4455" onclick="openPlayerModal(\''+safePName+'\')" title="Ver perfil">'+esc(p.name)+'</span></td>';
     comps.forEach(function(c){
       var cs=st[c]||{goles:0,asistencias:0,partidos:0,gc:0,imbatidas:0};
       totPJ+=cs.partidos||0;
@@ -1085,7 +1103,7 @@ function renderCareerRoster(){
   }
   function mkRow(name){
     var r=roster[name],isGK=r.pos==='GK';
-    var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+r.pos+'">'+PL[r.pos]+'</span> '+esc(name)+'</td>';
+    var safeCName=name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+r.pos+'">'+PL[r.pos]+'</span> <span style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#3A4455" onclick="openPlayerModal(\''+safeCName+'\')" title="Ver perfil">'+esc(name)+'</span></td>';
     allComps.forEach(function(comp){
       var ct=compTot(name,comp);
       cells+='<td style="border-left:1px solid #1E253018">'+ct.partidos+'</td>';
@@ -1120,6 +1138,178 @@ function renderCareerRoster(){
     html+='<div class="ovx"><table class="tbl"><thead>'+mkHead(true)+mkSub(true)+'</thead><tbody>'+gkNames.map(mkRow).join('')+'</tbody></table></div>';
   }
   el.innerHTML=html;
+}
+
+function openPlayerModal(name){
+  // Gather all data for this player across all seasons
+  var allSeasons=Object.keys(G.seasons);
+  var playerData=[];  // [{sn, pos, stats:{comp:{...}}, comps:[]}]
+  var pos='FWD';
+  allSeasons.forEach(function(sn){
+    var p=(G.seasons[sn].players||[]).find(function(p){return p.name===name;});
+    if(!p)return;
+    pos=p.pos;
+    playerData.push({sn:sn,pos:p.pos,stats:p.stats||{},comps:G.seasons[sn].comps||[]});
+  });
+
+  var isGK=pos==='GK';
+  var posColors={FWD:'#F85149',MID:'#3A8EE8',DEF:'#2EA84A',GK:'#E8B800'};
+  var pc=posColors[pos]||'#E8B800';
+
+  // Career totals
+  var carTot={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+  var carByComp={};  // comp -> totals
+  playerData.forEach(function(d){
+    Object.keys(d.stats).forEach(function(comp){
+      var s=d.stats[comp]||{};
+      carTot.partidos+=(s.partidos||0);
+      carTot.goles+=(s.goles||0);
+      carTot.asistencias+=(s.asistencias||0);
+      carTot.gc+=(s.gc||0);
+      carTot.imbatidas+=(s.imbatidas||0);
+      if(!carByComp[comp])carByComp[comp]={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+      carByComp[comp].partidos+=(s.partidos||0);
+      carByComp[comp].goles+=(s.goles||0);
+      carByComp[comp].asistencias+=(s.asistencias||0);
+      carByComp[comp].gc+=(s.gc||0);
+      carByComp[comp].imbatidas+=(s.imbatidas||0);
+    });
+  });
+
+  // Header
+  document.getElementById('pm-badge').textContent=PL[pos]?PL[pos][0]:pos;
+  document.getElementById('pm-badge').style.background=pc+'22';
+  document.getElementById('pm-badge').style.color=pc;
+  document.getElementById('pm-badge').style.border='1px solid '+pc+'40';
+  document.getElementById('pm-name').textContent=name;
+  document.getElementById('pm-pos').textContent=PL[pos]||pos;
+
+  // Build body
+  var html='';
+
+  // Career KPIs
+  html+='<div class="pm-sec"><div class="pm-sec-title">🌐 Totales de carrera</div><div class="pm-kpis">';
+  if(isGK){
+    html+=pmKpi(carTot.partidos,'PJ','#3A8EE8');
+    html+=pmKpi(carTot.gc,'GC','#F85149');
+    html+=pmKpi(carTot.imbatidas,'Imbatidas','#2EA84A');
+    if(carTot.partidos>0)html+=pmKpi(Math.round(carTot.gc/carTot.partidos*10)/10,'GC/PJ','#E87820');
+  } else {
+    html+=pmKpi(carTot.partidos,'PJ','#3A8EE8');
+    html+=pmKpi(carTot.goles,'Goles','#E8B800');
+    html+=pmKpi(carTot.asistencias,'Asist.','#CC0000');
+    html+=pmKpi(carTot.goles+carTot.asistencias,'G+A','#2EA84A');
+    if(carTot.partidos>0)html+=pmKpi(Math.round(carTot.goles/carTot.partidos*100)/100,'G/PJ','#E87820');
+  }
+  html+='</div></div>';
+
+  // Career by competition
+  var compKeys=Object.keys(carByComp);
+  if(compKeys.length>0){
+    html+='<div class="pm-sec"><div class="pm-sec-title">🏆 Por competición · Carrera</div><div class="pm-comp-grid">';
+    compKeys.forEach(function(comp){
+      var s=carByComp[comp];
+      if(!s.partidos&&!s.goles&&!s.gc)return;
+      var cc=CC[comp]||'#5A6578';
+      html+='<div class="pm-comp-card" style="border-color:'+cc+'40">';
+      html+='<div class="pm-comp-name" style="color:'+cc+'">'+(CB[comp]||'🏅')+' '+esc(comp)+'</div>';
+      html+='<div class="pm-comp-stats">';
+      html+='<span class="pm-comp-stat"><span style="color:#5A6578">PJ </span>'+s.partidos+'</span>';
+      if(isGK){
+        html+='<span class="pm-comp-stat"><span style="color:#F85149">GC </span>'+s.gc+'</span>';
+        html+='<span class="pm-comp-stat"><span style="color:#2EA84A">PI </span>'+s.imbatidas+'</span>';
+      } else {
+        html+='<span class="pm-comp-stat"><span style="color:#E8B800">⚽ </span>'+s.goles+'</span>';
+        html+='<span class="pm-comp-stat"><span style="color:#CC0000">🎯 </span>'+s.asistencias+'</span>';
+      }
+      html+='</div></div>';
+    });
+    html+='</div></div>';
+  }
+
+  // Season breakdown table
+  if(playerData.length>0){
+    var allComps=[];
+    compKeys.forEach(function(c){if(allComps.indexOf(c)===-1)allComps.push(c);});
+
+    html+='<div class="pm-sec"><div class="pm-sec-title">📅 Por temporada</div>';
+    html+='<div style="overflow-x:auto"><table class="pm-seas-table"><thead><tr>';
+    html+='<th>Temporada</th>';
+    allComps.forEach(function(comp){
+      var cc=CC[comp]||'#5A6578';
+      var span=isGK?3:3;
+      html+='<th colspan="'+span+'" style="border-left:2px solid '+cc+'40;color:'+cc+'">'+(CB[comp]||'🏅')+' '+esc(comp)+'</th>';
+    });
+    html+='<th colspan="'+(isGK?3:3)+'" style="border-left:2px solid #1E2530">Total</th>';
+    html+='</tr><tr>';
+    html+='<th></th>';
+    var subCols=isGK?['PJ','GC','PI']:['PJ','G','A'];
+    allComps.forEach(function(comp,i){
+      subCols.forEach(function(col,j){
+        html+='<th style="'+(j===0?'border-left:2px solid '+(CC[comp]||'#5A6578')+'40':'')+'">'+col+'</th>';
+      });
+    });
+    subCols.forEach(function(col,j){
+      html+='<th style="'+(j===0?'border-left:2px solid #1E2530':'')+'">'+col+'</th>';
+    });
+    html+='</tr></thead><tbody>';
+
+    playerData.forEach(function(d){
+      var snTot={partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+      html+='<tr><td>'+esc(d.sn)+'</td>';
+      allComps.forEach(function(comp,i){
+        var s=d.stats[comp]||{partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+        snTot.partidos+=(s.partidos||0);
+        snTot.goles+=(s.goles||0);
+        snTot.asistencias+=(s.asistencias||0);
+        snTot.gc+=(s.gc||0);
+        snTot.imbatidas+=(s.imbatidas||0);
+        var bc='border-left:2px solid '+(CC[comp]||'#5A6578')+'30';
+        if(isGK){
+          html+='<td style="'+bc+'">'+s.partidos+'</td><td style="color:#F85149">'+s.gc+'</td><td style="color:#2EA84A">'+s.imbatidas+'</td>';
+        } else {
+          html+='<td style="'+bc+'">'+s.partidos+'</td><td style="color:#E8B800">'+s.goles+'</td><td style="color:#CC0000">'+s.asistencias+'</td>';
+        }
+      });
+      if(isGK){
+        html+='<td style="border-left:2px solid #1E2530;font-weight:700">'+snTot.partidos+'</td><td style="color:#F85149;font-weight:700">'+snTot.gc+'</td><td style="color:#2EA84A;font-weight:700">'+snTot.imbatidas+'</td>';
+      } else {
+        html+='<td style="border-left:2px solid #1E2530;font-weight:700">'+snTot.partidos+'</td><td style="color:#E8B800;font-weight:700">'+snTot.goles+'</td><td style="color:#CC0000;font-weight:700">'+snTot.asistencias+'</td>';
+      }
+      html+='</tr>';
+    });
+
+    // Total row
+    html+='<tr class="pm-total"><td>CARRERA</td>';
+    allComps.forEach(function(comp){
+      var s=carByComp[comp]||{partidos:0,goles:0,asistencias:0,gc:0,imbatidas:0};
+      var bc='border-left:2px solid '+(CC[comp]||'#5A6578')+'30';
+      if(isGK){
+        html+='<td style="'+bc+'">'+s.partidos+'</td><td style="color:#F85149">'+s.gc+'</td><td style="color:#2EA84A">'+s.imbatidas+'</td>';
+      } else {
+        html+='<td style="'+bc+'">'+s.partidos+'</td><td style="color:#E8B800">'+s.goles+'</td><td style="color:#CC0000">'+s.asistencias+'</td>';
+      }
+    });
+    if(isGK){
+      html+='<td style="border-left:2px solid #1E2530">'+carTot.partidos+'</td><td style="color:#F85149">'+carTot.gc+'</td><td style="color:#2EA84A">'+carTot.imbatidas+'</td>';
+    } else {
+      html+='<td style="border-left:2px solid #1E2530">'+carTot.partidos+'</td><td style="color:#E8B800">'+carTot.goles+'</td><td style="color:#CC0000">'+carTot.asistencias+'</td>';
+    }
+    html+='</tr></tbody></table></div></div>';
+  }
+
+  document.getElementById('pm-body').innerHTML=html;
+  document.getElementById('player-modal').style.display='block';
+  document.body.style.overflow='hidden';
+}
+
+function pmKpi(val,label,color){
+  return'<div class="pm-kpi"><div class="pm-kv" style="color:'+color+'">'+val+'</div><div class="pm-kl">'+label+'</div></div>';
+}
+
+function closePlayerModal(){
+  document.getElementById('player-modal').style.display='none';
+  document.body.style.overflow='';
 }
 
 function exportData(){
@@ -1174,5 +1364,20 @@ render();
   }
 })();
 </script>
+  <!-- Player Profile Modal -->
+  <div id="player-modal" style="display:none;position:fixed;inset:0;z-index:500;background:#00000088;backdrop-filter:blur(4px);overflow-y:auto;padding:20px" onclick="if(event.target===this)closePlayerModal()">
+    <div style="max-width:720px;margin:0 auto;background:#0F1318;border:1px solid #1E2530;border-radius:16px;overflow:hidden">
+      <div id="pm-header" style="padding:20px 24px 16px;border-bottom:1px solid #1E2530;display:flex;align-items:center;gap:14px">
+        <div id="pm-badge" style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div id="pm-name" style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:.04em;line-height:1"></div>
+          <div id="pm-pos" style="font-size:11px;color:#5A6578;margin-top:2px;letter-spacing:.08em;text-transform:uppercase"></div>
+        </div>
+        <button onclick="closePlayerModal()" style="background:none;border:1px solid #1E2530;color:#5A6578;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px">✕ Cerrar</button>
+      </div>
+      <div id="pm-body" style="padding:20px 24px"></div>
+    </div>
+  </div>
+
 </body>
 </html>
