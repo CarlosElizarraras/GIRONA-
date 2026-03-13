@@ -82,7 +82,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 .mc-num{color:var(--mt2);font-size:10px;width:18px;text-align:right}
 .mc-comp{font-size:13px}
 .mc-team{display:flex;align-items:center;gap:5px;min-width:0}
-.mc-img{width:18px;height:18px;object-fit:contain;flex-shrink:0}
+.mc-img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
 .mc-home{justify-content:flex-end}
 .mc-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 .mc-home .mc-name{text-align:right}
@@ -643,9 +643,9 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
-      +'<div class="mc-team mc-home">'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
+      +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
-      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span>'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
+      +'<div class="mc-team mc-away">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
       +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
 
