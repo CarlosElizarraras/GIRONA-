@@ -81,7 +81,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 .mc-meta{display:flex;align-items:center;gap:5px}
 .mc-num{color:var(--mt2);font-size:10px;width:18px;text-align:right}
 .mc-comp{font-size:13px}
-.mc-team{display:flex;align-items:center;gap:7px;min-width:0}
+.mc-team{display:flex;align-items:center;gap:5px;min-width:0}
+.mc-img{width:18px;height:18px;object-fit:contain;flex-shrink:0}
 .mc-home{justify-content:flex-end}
 .mc-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 .mc-home .mc-name{text-align:right}
@@ -367,7 +368,7 @@ var RIVAL_LOGOS = {
   'Alavés':            '',
   'Athletic Bilbao':   '',
   'Atlético Madrid':   '',
-  'Barcelona':         'https://img.sofascore.com/api/v1/team/2817/image',
+  'Barcelona':         '',
   'Celta de Vigo':     '',
   'Cádiz':             '',
   'Deportivo La Coruña': '',
@@ -382,7 +383,7 @@ var RIVAL_LOGOS = {
   'Osasuna':           '',
   'Rayo Vallecano':    '',
   'Real Betis':        '',
-  'Real Madrid':       'https://img.sofascore.com/api/v1/team/2829/image',
+  'Real Madrid':       '',
   'Real Oviedo':       '',
   'Real Sociedad':     '',
   'Sevilla':           '',
@@ -392,39 +393,39 @@ var RIVAL_LOGOS = {
 
 // Fotos de jugadores — nombre exacto como está en plantilla
 var PLAYER_PHOTOS = {
-  'Abel Ruíz':           '',
-  'Alejandro Francés':   '',
-  'Arnau Martínez':      '',
-  'Arnau Tenas':         '',
-  'Axel Witsel':         '',
-  'Azzedine Ounahi':     '',
-  'Bryan Gil':           '',
-  'Claudio Echeverri':   '',
-  'Cristhian Stuani':    '',
-  'Cristian Portu':      '',
-  'Daley Blind':         '',
-  'Fran Beltrán':        '',
-  'Gilberto Mora':       '',
-  'Hugo Rincón':         '',
-  'Hwang Hee Chan':      '',
-  'Israel Reyes':        '',
-  'Iván Fresneda':       '',
-  'Iván Martín':         '',
-  'Joel Roca':           '',
-  'Ladislav Krejči':     '',
-  'Lass Kourouma':       '',
-  'Marc-André Ter Stegen': '',
-  'Marcel Ruiz':         '',
-  'Papa Dame Ba':        '',
-  'Paulo Gazzaniga':     '',
-  'Pervis Estupiñán':    '',
-  'Roony Bardghji':      '',
-  'Thomas Lemar':        '',
-  'Viktor Tsygankov':    '',
-  'Vitor Reis':          '',
-  'Vladyslav Vanat':     '',
-  'Yáser Aspirilla':     '',
-  'Álex Moreno':         '',
+  'Abel Ruíz':           'https://images.fotmob.com/image_resources/playerimages/748380.png',
+  'Alejandro Francés':   'https://images.fotmob.com/image_resources/playerimages/1112511.png',
+  'Arnau Martínez':      'https://images.fotmob.com/image_resources/playerimages/1194892.png',
+  'Arnau Tenas':         'https://images.fotmob.com/image_resources/playerimages/942375.png',
+  'Axel Witsel':         'https://images.fotmob.com/image_resources/playerimages/39591.png',
+  'Azzedine Ounahi':     'https://images.fotmob.com/image_resources/playerimages/1073143.png',
+  'Bryan Gil':           'https://images.fotmob.com/image_resources/playerimages/970692.png',
+  'Claudio Echeverri':   'https://images.fotmob.com/image_resources/playerimages/1486264.png',
+  'Cristhian Stuani':    'https://images.fotmob.com/image_resources/playerimages/58294.png',
+  'Cristian Portu':      'https://images.fotmob.com/image_resources/playerimages/282692.png',
+  'Daley Blind':         'https://images.fotmob.com/image_resources/playerimages/161012.png',
+  'Fran Beltrán':        'https://images.fotmob.com/image_resources/playerimages/785511.png',
+  'Gilberto Mora':       'https://images.fotmob.com/image_resources/playerimages/1670377.png',
+  'Hugo Rincón':         'https://images.fotmob.com/image_resources/playerimages/1427819.png',
+  'Hwang Hee Chan':      'https://images.fotmob.com/image_resources/playerimages/620026.png',
+  'Israel Reyes':        'https://images.fotmob.com/image_resources/playerimages/1074586.png',
+  'Iván Fresneda':       'https://images.fotmob.com/image_resources/playerimages/1325998.png',
+  'Iván Martín':         'https://images.fotmob.com/image_resources/playerimages/967871.png',
+  'Joel Roca':           'https://images.fotmob.com/image_resources/playerimages/1326043.png',
+  'Ladislav Krejči':     'https://images.fotmob.com/image_resources/playerimages/798029.png',
+  'Lass Kourouma':       'https://images.fotmob.com/image_resources/playerimages/1643963.png',
+  'Marc-André Ter Stegen': 'https://images.fotmob.com/image_resources/playerimages/184554.png',
+  'Marcel Ruiz':         'https://images.fotmob.com/image_resources/playerimages/950681.png',
+  'Papa Dame Ba':        'https://images.fotmob.com/image_resources/playerimages/1690793.png',
+  'Paulo Gazzaniga':     'https://images.fotmob.com/image_resources/playerimages/278285.png',
+  'Pervis Estupiñán':    'https://images.fotmob.com/image_resources/playerimages/688278.png',
+  'Roony Bardghji':      'https://images.fotmob.com/image_resources/playerimages/1315475.png',
+  'Thomas Lemar':        'https://images.fotmob.com/image_resources/playerimages/468931.png',
+  'Viktor Tsygankov':    'https://images.fotmob.com/image_resources/playerimages/564847.png',
+  'Vitor Reis':          'https://images.fotmob.com/image_resources/playerimages/1580952.png',
+  'Vladyslav Vanat':     'https://images.fotmob.com/image_resources/playerimages/1231648.png',
+  'Yáser Aspirilla':     'https://images.fotmob.com/image_resources/playerimages/1277380.png',
+  'Álex Moreno':         'https://images.fotmob.com/image_resources/playerimages/477588.png',
 };
 
 // ══════════════════════════════════════════════════════
@@ -641,9 +642,9 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
-      +'<div class="mc-team mc-home"><span class="mc-logo">'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px">':(GIRONA_LOGO&&!isV?'<img src="'+GIRONA_LOGO+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px">':''))+'</span><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
+      +'<div class="mc-team mc-home">'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
-      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span><span class="mc-logo">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">':((!isV&&RIVAL_LOGOS[m.rival])?'<img src="'+RIVAL_LOGOS[m.rival]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">':''))+'</span></div>'
+      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span>'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
       +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
 
@@ -1469,8 +1470,15 @@ load();rebuildRivals();setupComp();
 (function(){
   var img=document.getElementById('hcrest-img');
   var svg=document.getElementById('hcrest');
-  if(GIRONA_LOGO){img.src=GIRONA_LOGO;img.style.display='block';svg.style.display='none';}
-  else{svg.style.display='block';img.style.display='none';}
+  if(GIRONA_LOGO){
+    img.src=GIRONA_LOGO;
+    img.style.display='block';
+    svg.style.display='none';
+    img.onerror=function(){this.style.display='none';svg.style.display='block';};
+  } else {
+    svg.style.display='block';
+    img.style.display='none';
+  }
 })();
 // Pre-fill season in trophy form
 document.getElementById('t-seas').value=G.activeSeason;
