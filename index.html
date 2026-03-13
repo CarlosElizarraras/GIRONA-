@@ -354,6 +354,81 @@ var CONDS=['Local','Visitante','Neutral'];
 var CI={'Local':'🏠','Visitante':'✈️','Neutral':'⚖️'};
 var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'},'Champions':{i:'⭐',c:'#E8B800'},'Supercopa':{i:'🥇',c:'#E87820'},'Supercopa de España':{i:'🥇',c:'#E87820'}};
 
+// ══════════════════════════════════════════════════════
+// IMÁGENES — Rellena las URLs y listo
+// ══════════════════════════════════════════════════════
+
+// Logo del Girona FC (usado en header y en partidos como local)
+var GIRONA_LOGO = 'https://images.fotmob.com/image_resources/logo/teamlogo/7732.png';  // Ej: 'https://i.imgur.com/abc123.png'
+
+// Logos de equipos rivales — agrega los que quieras
+var RIVAL_LOGOS = {
+  'AEK Athens':        '',
+  'Alavés':            '',
+  'Athletic Bilbao':   '',
+  'Atlético Madrid':   '',
+  'Barcelona':         'https://img.sofascore.com/api/v1/team/2817/image',
+  'Celta de Vigo':     '',
+  'Cádiz':             '',
+  'Deportivo La Coruña': '',
+  'Dinamo Zagreb':     '',
+  'Elche':             '',
+  'Espanyol':          '',
+  'Getafe':            '',
+  'Lazio':             '',
+  'Leganés':           '',
+  'Levante':           '',
+  'Mallorca':          '',
+  'Osasuna':           '',
+  'Rayo Vallecano':    '',
+  'Real Betis':        '',
+  'Real Madrid':       'https://img.sofascore.com/api/v1/team/2829/image',
+  'Real Oviedo':       '',
+  'Real Sociedad':     '',
+  'Sevilla':           '',
+  'Valencia':          '',
+  'Villarreal':        '',
+};
+
+// Fotos de jugadores — nombre exacto como está en plantilla
+var PLAYER_PHOTOS = {
+  'Abel Ruíz':           '',
+  'Alejandro Francés':   '',
+  'Arnau Martínez':      '',
+  'Arnau Tenas':         '',
+  'Axel Witsel':         '',
+  'Azzedine Ounahi':     '',
+  'Bryan Gil':           '',
+  'Claudio Echeverri':   '',
+  'Cristhian Stuani':    '',
+  'Cristian Portu':      '',
+  'Daley Blind':         '',
+  'Fran Beltrán':        '',
+  'Gilberto Mora':       '',
+  'Hugo Rincón':         '',
+  'Hwang Hee Chan':      '',
+  'Israel Reyes':        '',
+  'Iván Fresneda':       '',
+  'Iván Martín':         '',
+  'Joel Roca':           '',
+  'Ladislav Krejči':     '',
+  'Lass Kourouma':       '',
+  'Marc-André Ter Stegen': '',
+  'Marcel Ruiz':         '',
+  'Papa Dame Ba':        '',
+  'Paulo Gazzaniga':     '',
+  'Pervis Estupiñán':    '',
+  'Roony Bardghji':      '',
+  'Thomas Lemar':        '',
+  'Viktor Tsygankov':    '',
+  'Vitor Reis':          '',
+  'Vladyslav Vanat':     '',
+  'Yáser Aspirilla':     '',
+  'Álex Moreno':         '',
+};
+
+// ══════════════════════════════════════════════════════
+
 var G={activeSeason:'2025/26',seasons:{},allRivals:{},career:{trophies:[]}};
 var barC=null,lineC=null,confirmClear=false,activeRival=null;
 var plantSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
@@ -566,9 +641,9 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
-      +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
+      +'<div class="mc-team mc-home"><span class="mc-logo">'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px">':(GIRONA_LOGO&&!isV?'<img src="'+GIRONA_LOGO+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:4px">':''))+'</span><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
-      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
+      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span><span class="mc-logo">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">':((!isV&&RIVAL_LOGOS[m.rival])?'<img src="'+RIVAL_LOGOS[m.rival]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-left:4px">':''))+'</span></div>'
       +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
 
@@ -805,7 +880,7 @@ function getTopN(stat,n,sn){
 function mkTopCard(title,items,lbl){
   var rk=['r1','r2','r3','r4','r5'];
   var rows=items.length?items.map(function(x,i){
-    return'<div class="tr2"><div class="rnk '+rk[i]+'">'+(i+1)+'</div><div class="tnm">'+esc(x.name)+'</div>'
+    return'<div class="tr2"><div class="rnk '+rk[i]+'">'+(i+1)+'</div>'+(PLAYER_PHOTOS[x.name]?'<img src="'+PLAYER_PHOTOS[x.name]+'" style="width:22px;height:22px;object-fit:cover;border-radius:50%;margin-right:6px;vertical-align:middle">':'')+'<div class="tnm">'+esc(x.name)+'</div><div class="tvw"><div class="tvl">'+x.val+'</div><div class="tlb">'+lbl+'</div></div></div>';
       +'<div class="tvw"><div class="tvl">'+x.val+'</div><div class="tlb">'+lbl+'</div></div></div>';
   }).join(''):'<div class="empty" style="padding:14px">Sin datos</div>';
   return'<div class="tcrd"><div class="tch">'+title+'</div>'+rows+'</div>';
@@ -1214,11 +1289,11 @@ function openPlayerModal(name){
   });
 
   // Header
-  document.getElementById('pm-badge').textContent=PL[pos]?PL[pos][0]:pos;
-  document.getElementById('pm-badge').style.background=pc+'22';
+  var photoHtml=PLAYER_PHOTOS[name]?'<img src="'+PLAYER_PHOTOS[name]+'" style="width:44px;height:44px;object-fit:cover;border-radius:10px;border:1px solid '+pc+'40">':'<span style="font-size:18px;font-weight:800;color:'+pc+'">'+( PL[pos]?PL[pos][0]:pos)+'</span>';
+  document.getElementById('pm-badge').innerHTML=photoHtml;
+  document.getElementById('pm-badge').style.background=PLAYER_PHOTOS[name]?'transparent':pc+'22';
   document.getElementById('pm-badge').style.color=pc;
   document.getElementById('pm-badge').style.border='1px solid '+pc+'40';
-  document.getElementById('pm-name').textContent=name;
   document.getElementById('pm-pos').textContent=PL[pos]||pos;
 
   // Build body
@@ -1390,6 +1465,13 @@ function importData(e){
 
 
 load();rebuildRivals();setupComp();
+// Init header crest
+(function(){
+  var img=document.getElementById('hcrest-img');
+  var svg=document.getElementById('hcrest');
+  if(GIRONA_LOGO){img.src=GIRONA_LOGO;img.style.display='block';svg.style.display='none';}
+  else{svg.style.display='block';img.style.display='none';}
+})();
 // Pre-fill season in trophy form
 document.getElementById('t-seas').value=G.activeSeason;
 render();
