@@ -82,7 +82,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 .mc-num{color:var(--mt2);font-size:10px;width:18px;text-align:right}
 .mc-comp{font-size:13px}
 .mc-team{display:flex;align-items:center;gap:5px;min-width:0}
-.mc-img{width:18px;height:18px;object-fit:contain;flex-shrink:0}
+.mc-img{width:26px;height:26px;object-fit:contain;flex-shrink:0;display:block}
 .mc-home{justify-content:flex-end}
 .mc-name{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
 .mc-home .mc-name{text-align:right}
@@ -208,7 +208,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 <body>
 <div id="hdr">
   <div id="hl">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="flex-shrink:0" >
+    <img id="hcrest-img" src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" width="38" height="38" style="object-fit:contain;flex-shrink:0;display:block" onerror="this.style.display='none';document.getElementById('hcrest').style.display='block'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="flex-shrink:0;display:none" >
   <defs><clipPath id="shield-clip"><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z"/></clipPath></defs>
   <path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="#CC0000" stroke="#fff" stroke-width="2"/>
   <rect x="4" y="4" width="23" height="112" fill="#CC0000" clip-path="url(#shield-clip)"/>
@@ -642,12 +643,11 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
-      +'<div class="mc-team mc-home">'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span></div>'
+      +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV?'<img src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" class="mc-img" onerror="this.style.display=\'none\'">':''))+'</div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
-      +'<div class="mc-team mc-away"><span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span>'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
+      +'<div class="mc-team mc-away">'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV?'':'<img src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" class="mc-img" onerror="this.style.display=\'none\'">'))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
       +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
-
   }).join('');
 }
 function renderRivales(){
@@ -664,8 +664,9 @@ function renderRivales(){
     var ia=activeRival===r.name;
     var arr=ia?' <span style="color:#E8B800">▼</span>':' <span style="color:#3A4455">▶</span>';
     var safeName=r.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var rlogo=RIVAL_LOGOS[r.name]?'<img src="'+RIVAL_LOGOS[r.name]+'" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:6px;flex-shrink:0" onerror="this.style.display=\'none\'">':'';
     return'<tr class="rrow'+(ia?' active':'')+'" onclick="toggleRival(\''+safeName+'\')">'
-      +'<td style="text-align:left;padding-left:14px;font-weight:700;font-size:13px">'+esc(r.name)+arr+'</td>'
+      +'<td style="text-align:left;padding-left:14px;font-weight:700;font-size:13px"><span style="display:inline-flex;align-items:center;gap:0">'+rlogo+esc(r.name)+arr+'</span></td>'
       +'<td>'+s.pj+'</td><td style="color:#2EA84A;font-weight:700">'+s.v+'</td><td>'+s.e+'</td>'
       +'<td style="color:#F85149">'+s.d+'</td><td>'+s.gf+'</td><td>'+s.gc+'</td>'
       +'<td style="color:'+(dg>0?'#2EA84A':dg<0?'#F85149':'#5A6578')+';font-weight:700">'+dgs+'</td>'
@@ -796,7 +797,7 @@ function renderPlantilla(){
   }
 
   function mkHead(isGK){
-    var h='<th style="text-align:left;padding-left:14px;min-width:150px">Jugador</th>';
+    var h='<th style="text-align:left;padding-left:10px;min-width:190px">Jugador</th>';
     comps.forEach(function(comp){h+='<th colspan="3" style="border-left:1px solid #1E2530">'+comp+'</th>';});
     h+='<th colspan="3" style="border-left:1px solid #1E2530">Total</th><th></th>';
     return'<tr>'+h+'</tr>';
@@ -821,7 +822,9 @@ function renderPlantilla(){
   function mkRow(p){
     var isGK=p.pos==='GK',st=p.stats||{};
     var totPJ=0,totG=0,totA=0,totGC=0,totPI=0;
-    var safePName=p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");var cells='<td style="padding-left:14px;font-weight:700"><span class="pb p'+p.pos+'">'+PL[p.pos]+'</span> <span style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#3A4455" onclick="openPlayerModal(\''+safePName+'\')" title="Ver perfil">'+esc(p.name)+'</span></td>';
+    var safePName=p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var pPhoto=PLAYER_PHOTOS[p.name]?'<img src="'+PLAYER_PHOTOS[p.name]+'" style="width:26px;height:26px;object-fit:cover;border-radius:50%;flex-shrink:0;margin-right:6px" onerror="this.style.display=\'none\'">':'';
+    var cells='<td style="padding-left:10px;font-weight:700"><div style="display:flex;align-items:center;gap:0">'+pPhoto+'<span class="pb p'+p.pos+'">'+PL[p.pos]+'</span>&nbsp;<span style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#3A4455" onclick="openPlayerModal(\''+safePName+'\')" title="Ver perfil">'+esc(p.name)+'</span></div></td>';
     comps.forEach(function(c){
       var cs=st[c]||{goles:0,asistencias:0,partidos:0,gc:0,imbatidas:0};
       totPJ+=cs.partidos||0;
@@ -1466,20 +1469,9 @@ function importData(e){
 
 
 load();rebuildRivals();setupComp();
-// Init header crest
-(function(){
-  var img=document.getElementById('hcrest-img');
-  var svg=document.getElementById('hcrest');
-  if(GIRONA_LOGO){
-    img.src=GIRONA_LOGO;
-    img.style.display='block';
-    svg.style.display='none';
-    img.onerror=function(){this.style.display='none';svg.style.display='block';};
-  } else {
-    svg.style.display='block';
-    img.style.display='none';
-  }
-})();
+// Ensure active season exists and is ready
+if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey']);
+// Init: header crest handled via HTML img tag with onerror fallback
 // Pre-fill season in trophy form
 document.getElementById('t-seas').value=G.activeSeason;
 render();
