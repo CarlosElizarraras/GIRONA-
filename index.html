@@ -208,8 +208,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 <body>
 <div id="hdr">
   <div id="hl">
-    <img id="hcrest-img" src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" width="38" height="38" style="object-fit:contain;flex-shrink:0;display:block" onerror="this.style.display='none';document.getElementById('hcrest').style.display='block'">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="flex-shrink:0;display:none" >
+    <img id="hcrest-img" src="" width="38" height="38" style="object-fit:contain;flex-shrink:0;display:none" onerror="this.style.display='none';document.getElementById('hcrest').style.display='block'">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="38" height="38" id="hcrest" style="flex-shrink:0;display:block" >
   <defs><clipPath id="shield-clip"><path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z"/></clipPath></defs>
   <path d="M50 4 L96 20 L96 65 Q96 100 50 116 Q4 100 4 65 L4 20 Z" fill="#CC0000" stroke="#fff" stroke-width="2"/>
   <rect x="4" y="4" width="23" height="112" fill="#CC0000" clip-path="url(#shield-clip)"/>
@@ -361,7 +361,7 @@ var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'
 // ══════════════════════════════════════════════════════
 
 // Logo del Girona FC (usado en header y en partidos como local)
-var GIRONA_LOGO = 'https://images.fotmob.com/image_resources/logo/teamlogo/7732.png';  // Ej: 'https://i.imgur.com/abc123.png'
+var GIRONA_LOGO = 'https://cdn.worldvectorlogo.com/logos/girona-fc.svg';
 
 // Logos de equipos rivales — agrega los que quieras
 var RIVAL_LOGOS = {
@@ -643,9 +643,9 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
-      +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV?'<img src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" class="mc-img" onerror="this.style.display=\'none\'">':''))+'</div>'
+      +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img" onerror="this.style.display=\'none\'">':''))+'</div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
-      +'<div class="mc-team mc-away">'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV?'':'<img src="https://images.fotmob.com/image_resources/logo/teamlogo/9694.png" class="mc-img" onerror="this.style.display=\'none\'">'))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
+      +'<div class="mc-team mc-away">'+(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img" onerror="this.style.display=\'none\'">':(!isV?'':(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img" onerror="this.style.display=\'none\'">':'')))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
       +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
   }).join('');
@@ -1471,7 +1471,17 @@ function importData(e){
 load();rebuildRivals();setupComp();
 // Ensure active season exists and is ready
 if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey']);
-// Init: header crest handled via HTML img tag with onerror fallback
+// Init header crest
+(function(){
+  var img=document.getElementById('hcrest-img');
+  var svg=document.getElementById('hcrest');
+  if(GIRONA_LOGO){
+    img.src=GIRONA_LOGO;
+    img.style.display='block';
+    svg.style.display='none';
+    img.onerror=function(){this.style.display='none';svg.style.display='block';};
+  }
+})();
 // Pre-fill season in trophy form
 document.getElementById('t-seas').value=G.activeSeason;
 render();
