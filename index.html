@@ -257,7 +257,14 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
       <div class="ccard"><div class="ctit">&#128202; Resultados por competici&oacute;n</div><div class="cwrap"><canvas id="chart-bar"></canvas></div></div>
       <div class="ccard"><div class="ctit">&#128200; Efectividad acumulada</div><div class="cwrap"><canvas id="chart-line"></canvas></div></div>
     </div>
-    <div id="dash-tops" style="display:none" class="mb14"></div>
+    <div id="dash-tops" style="display:none" class="mb14">
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button id="top-tog-seas" class="tab-btn on" onclick="toggleTops('season')">📅 Temporada</button>
+        <button id="top-tog-car" class="tab-btn" onclick="toggleTops('career')">🌐 Carrera</button>
+      </div>
+      <div id="dash-tops-seas"></div>
+      <div id="dash-tops-car" style="display:none"></div>
+    </div>
     <div id="stats-toggle" style="display:none;margin-bottom:12px">
       <div style="display:flex;gap:6px">
         <button id="tog-seas" class="tab-btn on" onclick="toggleStats('season')">📅 Temporada</button>
@@ -822,14 +829,44 @@ function renderTops(){
 }
 function renderDashTops(){
   var el=document.getElementById('dash-tops');
-  var ps=getPs(),any=ps.some(function(p){return Object.keys(p.stats||{}).some(function(c){return (p.stats[c]&&p.stats[c].goles)||0;});});
-  if(!any){el.style.display='none';el.innerHTML='';return;}
+  var ps=getPs();
+  var anySeas=ps.some(function(p){return Object.keys(p.stats||{}).some(function(c){return (p.stats[c]&&(p.stats[c].goles||p.stats[c].asistencias));});});
+  // Check career tops across all seasons
+  var anyCareer=Object.keys(G.seasons).some(function(sn){
+    return (G.seasons[sn].players||[]).some(function(p){
+      return Object.keys(p.stats||{}).some(function(c){return (p.stats[c]&&(p.stats[c].goles||p.stats[c].asistencias));});
+    });
+  });
+  if(!anySeas&&!anyCareer){el.style.display='none';return;}
   el.style.display='block';
-  el.innerHTML='<div class="swrap mb14"><div class="shdr"><span class="stit">🏅 Goleadores · '+G.activeSeason+'</span></div>'
-    +'<div class="tgrid" style="padding:12px 14px">'
-    +mkTopCard('⚽ Top 5 Goles',getTopN('goles',5,G.activeSeason),'goles')
-    +mkTopCard('🎯 Top 5 Asistencias',getTopN('asistencias',5,G.activeSeason),'asist.')
-    +'</div></div>';
+  // Season tops
+  var seasEl=document.getElementById('dash-tops-seas');
+  if(anySeas){
+    seasEl.innerHTML='<div class="swrap mb14"><div class="shdr"><span class="stit">🏅 Goleadores · '+G.activeSeason+'</span></div>'
+      +'<div class="tgrid" style="padding:12px 14px">'
+      +mkTopCard('⚽ Top 5 Goles',getTopN('goles',5,G.activeSeason),'goles')
+      +mkTopCard('🎯 Top 5 Asistencias',getTopN('asistencias',5,G.activeSeason),'asist.')
+      +'</div></div>';
+  } else {
+    seasEl.innerHTML='<div class="empty">Sin datos de goleadores en la temporada actual</div>';
+  }
+  // Career tops
+  var carEl=document.getElementById('dash-tops-car');
+  if(anyCareer){
+    carEl.innerHTML='<div class="swrap mb14"><div class="shdr"><span class="stit">🌟 Goleadores · Carrera completa</span></div>'
+      +'<div class="tgrid" style="padding:12px 14px">'
+      +mkTopCard('⚽ Top 5 Goles',getTopN('goles',5),'goles')
+      +mkTopCard('🎯 Top 5 Asistencias',getTopN('asistencias',5),'asist.')
+      +'</div></div>';
+  } else {
+    carEl.innerHTML='<div class="empty">Sin datos de carrera aún</div>';
+  }
+}
+function toggleTops(mode){
+  document.getElementById('top-tog-seas').classList.toggle('on',mode==='season');
+  document.getElementById('top-tog-car').classList.toggle('on',mode==='career');
+  document.getElementById('dash-tops-seas').style.display=mode==='season'?'block':'none';
+  document.getElementById('dash-tops-car').style.display=mode==='career'?'block':'none';
 }
 
 function addTrophy(){
