@@ -92,6 +92,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 .mc-s:last-child{border-radius:0 7px 7px 0}
 .mc-dash{background:var(--bg);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:5px 3px;color:var(--mt2);font-size:11px;line-height:1}
 .mc-act{display:flex;align-items:center;justify-content:flex-end;gap:5px}
+.mc-act-mob{display:none;align-items:center;gap:5px;margin-left:auto}
+.mc-matchrow{display:contents}
 .del-btn{background:transparent;border:none;color:var(--mt);cursor:pointer;font-size:13px;padding:3px 5px;border-radius:4px}
 .del-btn:hover{color:#F85149}
 .rrow{cursor:pointer;transition:background .12s}
@@ -177,13 +179,31 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
   .fr{flex-direction:column;align-items:stretch}
   .fr .fg,.fr select,.fr input[type=text]{width:100%}
   .sbtn{width:100%;padding:11px}
-  .mcard{grid-template-columns:26px 1fr 92px 1fr 42px;padding:7px 10px}
+
+  /* Partidos: layout de 2 filas en móvil */
+  .mcard{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    padding:10px 12px;
+  }
+  .mc-meta{width:100%;justify-content:flex-start}
+  .mc-num{width:auto}
+  .mc-act-mob{display:flex}
+  .mc-act-desk{display:none}
+  .mc-matchrow{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:6px;
+    width:100%;
+  }
   .mc-name{font-size:13px}
 }
 @media(max-width:480px){
   .kgrid{grid-template-columns:repeat(2,1fr)}
-  .mcard{grid-template-columns:22px 1fr 84px 1fr 36px;padding:6px 8px}
   .mc-name{font-size:12px}
+  .mc-s{font-size:17px;padding:4px 7px;min-width:28px}
 }
 .pm-kpis{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .pm-kpi{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;min-width:80px;text-align:center}
@@ -645,11 +665,15 @@ function renderPartidos(){
     var rc=m.result==='V'?'#2EA84A':m.result==='D'?'#F85149':'#E87820';
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
-      +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span></div>'
+      +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span>'
+      +'<span class="mc-act-mob"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></span>'
+      +'</div>'
+      +'<div class="mc-matchrow">'
       +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
       +'<div class="mc-team mc-away">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
-      +'<div class="mc-act"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
+      +'</div>'
+      +'<div class="mc-act mc-act-desk"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
 
   }).join('');
