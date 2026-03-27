@@ -460,7 +460,7 @@ var PLAYER_PHOTOS = {
 // ══════════════════════════════════════════════════════
 
 var G={activeSeason:'2025/26',seasons:{},allRivals:{},career:{trophies:[]}};
-var barC=null,lineC=null,confirmClear=false,activeRival=null;
+var barC=null,lineC=null,confirmClear=false,activeRival=null,editingId=null;
 var plantSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
 var careerSort={out:{col:'pj',dir:-1},gk:{col:'pj',dir:-1}};
 
@@ -511,6 +511,25 @@ function addMatch(){
   var err=document.getElementById('form-err');
   if(isNaN(gf)||isNaN(gc)||gf<0||gc<0){err.textContent='Ingresa goles válidos';return;}
   err.textContent='';
+  if(editingId!==null){
+    var ms=getAS().matches;
+    var idx=ms.findIndex(function(m){return m.id===editingId;});
+    if(idx!==-1){
+      ms[idx].comp=document.getElementById('f-comp').value;
+      ms[idx].cond=document.getElementById('f-cond').value;
+      ms[idx].rival=document.getElementById('f-rival').value.trim();
+      ms[idx].gf=gf;ms[idx].gc=gc;
+      ms[idx].result=gf>gc?'V':gf===gc?'E':'D';
+    }
+    editingId=null;
+    document.getElementById('form-area').querySelector('.fct').textContent='+ Agregar Partido';
+    var cancelBtn=document.getElementById('cancel-edit-btn');if(cancelBtn)cancelBtn.remove();
+    var btn=document.getElementById('save-btn');btn.textContent='✓ Actualizado';btn.classList.add('ok');
+    setTimeout(function(){btn.textContent='Guardar';btn.classList.remove('ok');},1400);
+    rebuildRivals();save();
+    document.getElementById('f-gf').value='';document.getElementById('f-gc').value='';document.getElementById('f-rival').value='';
+    render();return;
+  }
   var m={id:Date.now(),comp:document.getElementById('f-comp').value,cond:document.getElementById('f-cond').value,
     rival:document.getElementById('f-rival').value.trim(),gf:gf,gc:gc,result:gf>gc?'V':gf===gc?'E':'D'};
   getAS().matches.push(m);
@@ -522,6 +541,36 @@ function addMatch(){
   var btn=document.getElementById('save-btn');btn.textContent='✓ Guardado';btn.classList.add('ok');
   setTimeout(function(){btn.textContent='Guardar';btn.classList.remove('ok');},1400);
   render();
+}
+function editMatch(id){
+  var m=getAs_match(id);if(!m)return;
+  editingId=id;
+  document.getElementById('f-comp').value=m.comp;
+  document.getElementById('f-cond').value=m.cond;
+  document.getElementById('f-rival').value=m.rival||'';
+  document.getElementById('f-gf').value=m.gf;
+  document.getElementById('f-gc').value=m.gc;
+  document.getElementById('form-area').querySelector('.fct').textContent='✏️ Editando Partido';
+  var btn=document.getElementById('save-btn');
+  if(!document.getElementById('cancel-edit-btn')){
+    var cb=document.createElement('button');
+    cb.id='cancel-edit-btn';cb.className='sbtn';cb.style.background='#3A4455';
+    cb.textContent='Cancelar';cb.onclick=cancelEdit;
+    btn.parentNode.insertBefore(cb,btn.nextSibling);
+  }
+  document.getElementById('form-area').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('f-rival').focus();
+  // Switch to partidos view if not already visible
+  sw('partidos');
+}
+function getAs_match(id){
+  return getAS().matches.find(function(m){return m.id===id;});
+}
+function cancelEdit(){
+  editingId=null;
+  document.getElementById('form-area').querySelector('.fct').textContent='+ Agregar Partido';
+  var cb=document.getElementById('cancel-edit-btn');if(cb)cb.remove();
+  document.getElementById('f-gf').value='';document.getElementById('f-gc').value='';document.getElementById('f-rival').value='';
 }
 document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&['f-gf','f-gc','f-rival'].indexOf(e.target.id)!==-1)addMatch();
@@ -671,14 +720,14 @@ function renderPartidos(){
     var mcc=CC[m.comp]||'#1E2530';
     return'<div class="mcard" style="border-left:3px solid '+mcc+';background:'+mcc+'14">'
       +'<div class="mc-meta"><span class="mc-num">'+idx+'</span><span class="mc-comp" style="color:'+(CC[m.comp]||'#5A6578')+'" title="'+esc(m.comp)+'">'+(CB[m.comp]||'🏅')+'</span>'
-      +'<span class="mc-act-mob"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></span>'
+      +'<span class="mc-act-mob"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" title="Editar" onclick="editMatch('+m.id+')" style="color:#3A8EE8">✏</button><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></span>'
       +'</div>'
       +'<div class="mc-matchrow">'
       +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
       +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
       +'<div class="mc-team mc-away">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
       +'</div>'
-      +'<div class="mc-act mc-act-desk"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
+      +'<div class="mc-act mc-act-desk"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" title="Editar" onclick="editMatch('+m.id+')" style="color:#3A8EE8">✏</button><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
       +'</div>';
 
   }).join('');
