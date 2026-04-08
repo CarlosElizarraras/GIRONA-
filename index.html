@@ -356,7 +356,7 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-liga" checked/> Liga</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-copa" checked/> Copa del Rey</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-ch"/> Champions</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-ch"/> Champions League</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-super"/> Supercopa</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer"><input type="checkbox" id="nc-custom"/> Otra:</label>
             <input type="text" id="nc-custom-name" placeholder="Nombre" maxlength="30" style="width:120px;padding:5px 8px;font-size:12px"/>
@@ -372,12 +372,12 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
 <div id="footer">GIRONA FC &middot; MODO CARRERA FIFA 26 &middot; Datos guardados autom&aacute;ticamente</div>
 <script>
 var SK='girona_v4';
-var CB={'Liga':'🇪🇸','Copa del Rey':'🏆','Champions':'⭐','Supercopa de España':'🥇'};
-var CC={'Liga':'#CC0000','Copa del Rey':'#7A8A9A','Champions':'#3A8EE8','Supercopa de España':'#E8B800','Liga BetPlay':'#CC0000'};
+var CB={'Liga':'🇪🇸','Copa del Rey':'🏆','Champions League':'⭐','Supercopa de España':'🥇'};
+var CC={'Liga':'#CC0000','Copa del Rey':'#7A8A9A','Champions League':'#3A8EE8','Supercopa de España':'#E8B800','Liga BetPlay':'#CC0000'};
 var PL={'FWD':'Delantero','MID':'Mediocampista','DEF':'Defensa','GK':'Portero'};
 var CONDS=['Local','Visitante','Neutral'];
 var CI={'Local':'🏠','Visitante':'✈️','Neutral':'⚖️'};
-var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'},'Champions':{i:'⭐',c:'#E8B800'},'Supercopa':{i:'🥇',c:'#E87820'},'Supercopa de España':{i:'🥇',c:'#E87820'}};
+var TDEF={'Copa del Rey':{i:'🏆',c:'#E8B800'},'Liga':{i:'🇪🇸',c:'#3A8EE8'},'Champions League':{i:'⭐',c:'#E8B800'},'Supercopa':{i:'🥇',c:'#E87820'},'Supercopa de España':{i:'🥇',c:'#E87820'}};
 
 // ══════════════════════════════════════════════════════
 // IMÁGENES — Rellena las URLs y listo
@@ -1068,6 +1068,52 @@ function addTrophy(){
   renderPalmares();
 }
 function removeTrophy(id){G.career.trophies=G.career.trophies.filter(function(t){return t.id!==id;});save();renderPalmares();}
+function editTrophy(id){
+  var t=G.career.trophies.find(function(x){return x.id===id;});
+  if(!t)return;
+  // Build a simple inline modal overlay
+  var overlay=document.getElementById('trophy-edit-modal');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='trophy-edit-modal';
+    overlay.style.cssText='position:fixed;inset:0;z-index:600;background:#00000099;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px';
+    overlay.onclick=function(e){if(e.target===overlay)closeTrophyEdit();};
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML='<div style="background:#0F1318;border:1px solid #1E2530;border-radius:16px;padding:24px;width:100%;max-width:440px">'
+    +'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:18px;letter-spacing:.06em;margin-bottom:18px;color:#E8B800">✏️ Editar Título</div>'
+    +'<div style="display:flex;flex-direction:column;gap:12px">'
+    +'<div class="fg"><label class="fl">Competición</label><input type="text" id="te-comp" value="'+esc(t.comp)+'" maxlength="50" style="width:100%"/></div>'
+    +'<div class="fg"><label class="fl">Temporada</label><input type="text" id="te-seas" value="'+esc(t.season)+'" maxlength="10" style="width:100%"/></div>'
+    +'<div class="fg"><label class="fl">Final vs</label><input type="text" id="te-rival" value="'+esc(t.rival||'')+'" maxlength="40" style="width:100%"/></div>'
+    +'<div class="fg"><label class="fl">Resultado</label><input type="text" id="te-score" value="'+esc(t.score||'')+'" maxlength="30" style="width:100%"/></div>'
+    +'<div class="fg"><label class="fl">¿Por penales?</label><select id="te-pen" style="width:100%"><option value="">No</option><option value="pen"'+(t.pen?' selected':'')+'>Sí (por penales)</option></select></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">'
+    +'<button class="abtn" onclick="closeTrophyEdit()">Cancelar</button>'
+    +'<button class="abtn red" onclick="saveTrophyEdit('+id+')">Guardar</button>'
+    +'</div></div>';
+  overlay.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function saveTrophyEdit(id){
+  var t=G.career.trophies.find(function(x){return x.id===id;});
+  if(!t)return;
+  var comp=document.getElementById('te-comp').value.trim();
+  var seas=document.getElementById('te-seas').value.trim();
+  if(!comp||!seas){return;}
+  t.comp=comp;
+  t.season=seas;
+  t.rival=document.getElementById('te-rival').value.trim();
+  t.score=document.getElementById('te-score').value.trim();
+  t.pen=document.getElementById('te-pen').value==='pen';
+  save();closeTrophyEdit();renderPalmares();
+}
+function closeTrophyEdit(){
+  var overlay=document.getElementById('trophy-edit-modal');
+  if(overlay)overlay.style.display='none';
+  document.body.style.overflow='';
+}
 function renderPalmares(){
   var trs=G.career.trophies||[];
   document.getElementById('palm-cnt').textContent=trs.length+' título'+(trs.length!==1?'s':'');
@@ -1093,7 +1139,10 @@ function renderPalmares(){
         +'<div class="phsn">'+esc(t.season)+'</div>'
         +(t.rival?'<div class="phdt">Final vs '+esc(t.rival)+(t.score?' · '+esc(t.score):'')+(t.pen?' <span style="background:#E8782022;color:#E87820;border:1px solid #E8782050;border-radius:4px;font-size:9px;padding:1px 5px;font-weight:800">PEN</span>':'')+'</div>':'')
       +'</div>'
-      +'<button class="del-btn" onclick="removeTrophy('+t.id+')" style="align-self:flex-start">✕</button>'
+      +'<div style="display:flex;flex-direction:column;gap:4px;align-self:flex-start">'
+      +'<button class="del-btn" onclick="editTrophy('+t.id+')" style="color:#5A6578" title="Editar">✏️</button>'
+      +'<button class="del-btn" onclick="removeTrophy('+t.id+')" title="Eliminar">✕</button>'
+      +'</div>'
       +'</div>';
   });
   cards+='</div>';
@@ -1105,7 +1154,7 @@ function createSeason(){
   var comps=[];
   if(document.getElementById('nc-liga').checked)comps.push('Liga');
   if(document.getElementById('nc-copa').checked)comps.push('Copa del Rey');
-  if(document.getElementById('nc-ch').checked)comps.push('Champions');
+  if(document.getElementById('nc-ch').checked)comps.push('Champions League');
   if(document.getElementById('nc-super').checked)comps.push('Supercopa de España');
   var customComp=document.getElementById('nc-custom-name').value.trim();
   if(document.getElementById('nc-custom').checked&&customComp)comps.push(customComp);
@@ -1595,17 +1644,7 @@ if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey'])
 // Pre-fill season in trophy form
 document.getElementById('t-seas').value=G.activeSeason;
 render();
-// Add Copa del Rey 25/26 if not present
-(function(){
-  if(!G.career.trophies.some(function(t){return t.comp==='Copa del Rey'&&t.season==='2025/26';})){
-    G.career.trophies.push({id:17290000001,comp:'Copa del Rey',season:'2025/26',rival:'Real Madrid',score:'2-1'});
-    save();renderPalmares();
-  }
-  if(!G.career.trophies.some(function(t){return t.comp==='Champions'&&t.season==='2025/26';})){
-    G.career.trophies.push({id:17290000002,comp:'Champions',season:'2025/26',rival:'PSG',score:'1-1 (4-2 pen.)',pen:true});
-    save();renderPalmares();
-  }
-})();
+
 </script>
   <!-- Player Profile Modal -->
   <div id="player-modal" style="display:none;position:fixed;inset:0;z-index:500;background:#00000088;backdrop-filter:blur(4px);overflow-y:auto;padding:20px" onclick="if(event.target===this)closePlayerModal()">
