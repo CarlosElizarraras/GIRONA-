@@ -264,7 +264,8 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
       <div class="fg"><label class="fl">Competici&oacute;n</label><select id="f-comp"></select></div>
       <div class="fg"><label class="fl">Condici&oacute;n</label><select id="f-cond"><option>Local</option><option>Visitante</option><option>Neutral</option></select></div>
       <div class="fg" style="flex:1;min-width:130px"><label class="fl">Rival</label><input type="text" id="f-rival" placeholder="Ej: Real Madrid" maxlength="40"/></div>
-      <div class="fg"><label class="fl">Marcador</label><div class="sw"><input class="si" type="number" id="f-gf" placeholder="GF" min="0" max="20"/><span class="ss">&ndash;</span><input class="si" type="number" id="f-gc" placeholder="GC" min="0" max="20"/></div></div>
+      <div class="fg"><label class="fl">Marcador</label><div class="sw"><input class="si" type="number" id="f-gf" placeholder="GF" min="0" max="20" oninput="checkPenField()"/><span class="ss">&ndash;</span><input class="si" type="number" id="f-gc" placeholder="GC" min="0" max="20" oninput="checkPenField()"/></div></div>
+      <div class="fg" id="pen-field" style="display:none"><label class="fl">Penales (si empate)</label><select id="f-pen"><option value="">— sin penales —</option><option value="W">Ganamos en penales</option><option value="L">Perdimos en penales</option></select></div>
       <button class="sbtn" id="save-btn" onclick="addMatch()">Guardar</button>
       <span class="ferr" id="form-err"></span>
     </div>
@@ -338,7 +339,9 @@ select:focus,input[type=text]:focus{border-color:var(--red)}
         <div class="fg" style="flex:1;min-width:120px"><label class="fl">Competici&oacute;n</label><input type="text" id="t-comp" placeholder="Ej: Copa del Rey" maxlength="50"/></div>
         <div class="fg"><label class="fl">Temporada</label><input type="text" id="t-seas" placeholder="Ej: 2025/26" maxlength="10"/></div>
         <div class="fg" style="flex:1;min-width:100px"><label class="fl">Final vs</label><input type="text" id="t-rival" placeholder="Ej: Real Madrid" maxlength="40"/></div>
-        <div class="fg"><label class="fl">Resultado</label><input type="text" id="t-score" placeholder="Ej: 2-1" maxlength="10"/></div>
+        <div class="fg"><label class="fl">Resultado</label><input type="text" id="t-score" placeholder="Ej: 2-1" maxlength="15"/></div>
+        <div class="fg"><label class="fl">¿Por penales?</label><select id="t-pen" onchange="document.getElementById('t-pen-score-wrap').style.display=this.value==='pen'?'':'none'"><option value="">No</option><option value="pen">Sí (por penales)</option></select></div>
+        <div class="fg" id="t-pen-score-wrap" style="display:none"><label class="fl">Resultado penales</label><input type="text" id="t-pen-score" placeholder="Ej: 4-2" maxlength="10"/></div>
         <button class="abtn red" onclick="addTrophy()">+ Agregar</button>
       </div>
     </div>
@@ -506,6 +509,14 @@ function setupComp(){
   comps.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o);});
 }
 
+function checkPenField(){
+  var gf=parseInt(document.getElementById('f-gf').value);
+  var gc=parseInt(document.getElementById('f-gc').value);
+  var show=(!isNaN(gf)&&!isNaN(gc)&&gf===gc);
+  document.getElementById('pen-field').style.display=show?'':'none';
+  if(!show)document.getElementById('f-pen').value='';
+}
+
 function addMatch(){
   var gf=parseInt(document.getElementById('f-gf').value);
   var gc=parseInt(document.getElementById('f-gc').value);
@@ -520,7 +531,9 @@ function addMatch(){
       ms[idx].cond=document.getElementById('f-cond').value;
       ms[idx].rival=document.getElementById('f-rival').value.trim();
       ms[idx].gf=gf;ms[idx].gc=gc;
-      ms[idx].result=gf>gc?'V':gf===gc?'E':'D';
+      var penVal=document.getElementById('f-pen').value;
+      ms[idx].pen=(gf===gc&&penVal)?penVal:'';
+      ms[idx].result=gf>gc?'V':gf<gc?'D':'E';
     }
     editingId=null;
     document.getElementById('form-area').querySelector('.fct').textContent='+ Agregar Partido';
@@ -529,15 +542,20 @@ function addMatch(){
     setTimeout(function(){btn.textContent='Guardar';btn.classList.remove('ok');},1400);
     rebuildRivals();save();
     document.getElementById('f-gf').value='';document.getElementById('f-gc').value='';document.getElementById('f-rival').value='';
+    document.getElementById('f-pen').value='';document.getElementById('pen-field').style.display='none';
     render();return;
   }
+  var penVal2=document.getElementById('f-pen').value;
   var m={id:Date.now(),comp:document.getElementById('f-comp').value,cond:document.getElementById('f-cond').value,
-    rival:document.getElementById('f-rival').value.trim(),gf:gf,gc:gc,result:gf>gc?'V':gf===gc?'E':'D'};
+    rival:document.getElementById('f-rival').value.trim(),gf:gf,gc:gc,
+    pen:(gf===gc&&penVal2)?penVal2:'',
+    result:gf>gc?'V':gf<gc?'D':'E'};
   getAS().matches.push(m);
   if(m.rival){if(!G.allRivals[m.rival])G.allRivals[m.rival]=[];
     G.allRivals[m.rival].push({season:G.activeSeason,comp:m.comp,cond:m.cond,gf:m.gf,gc:m.gc,result:m.result});}
   save();
   document.getElementById('f-gf').value='';document.getElementById('f-gc').value='';document.getElementById('f-rival').value='';
+  document.getElementById('f-pen').value='';document.getElementById('pen-field').style.display='none';
   document.getElementById('f-gf').focus();
   var btn=document.getElementById('save-btn');btn.textContent='✓ Guardado';btn.classList.add('ok');
   setTimeout(function(){btn.textContent='Guardar';btn.classList.remove('ok');},1400);
@@ -551,6 +569,8 @@ function editMatch(id){
   document.getElementById('f-rival').value=m.rival||'';
   document.getElementById('f-gf').value=m.gf;
   document.getElementById('f-gc').value=m.gc;
+  document.getElementById('f-pen').value=m.pen||'';
+  document.getElementById('pen-field').style.display=(m.gf===m.gc)?'':'none';
   document.getElementById('form-area').querySelector('.fct').textContent='✏️ Editando Partido';
   var btn=document.getElementById('save-btn');
   if(!document.getElementById('cancel-edit-btn')){
@@ -725,7 +745,7 @@ function renderPartidos(){
       +'</div>'
       +'<div class="mc-matchrow">'
       +'<div class="mc-team mc-home"><span class="mc-name" style="color:'+(hg?'#E8EDF3':'#5A6578')+'">'+esc(hn)+'</span>'+(isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':(!isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':''))+'</div>'
-      +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span></div>'
+      +'<div class="mc-sbox"><span class="mc-s" style="color:'+rc+'">'+hs+'</span><span class="mc-dash">–</span><span class="mc-s" style="color:'+rc+'">'+as2+'</span>'+(m.pen?'<span style="font-size:9px;color:#E87820;font-weight:800;margin-left:3px;align-self:center">PEN</span>':'')+'</div>'
       +'<div class="mc-team mc-away">'+(isV&&GIRONA_LOGO?'<img src="'+GIRONA_LOGO+'" class="mc-img">':(!isV&&RIVAL_LOGOS[m.rival]?'<img src="'+RIVAL_LOGOS[m.rival]+'" class="mc-img">':''))+'<span class="mc-name" style="color:'+(ag?'#E8EDF3':'#5A6578')+'">'+esc(an)+'</span></div>'
       +'</div>'
       +'<div class="mc-act mc-act-desk"><div class="bdg b'+m.result+'">'+m.result+'</div><button class="del-btn" title="Editar" onclick="editMatch('+m.id+')" style="color:#3A8EE8">✏</button><button class="del-btn" onclick="removeMatch('+m.id+')">✕</button></div>'
@@ -1036,10 +1056,15 @@ function addTrophy(){
   var seas=document.getElementById('t-seas').value.trim();
   var rival=document.getElementById('t-rival').value.trim();
   var score=document.getElementById('t-score').value.trim();
+  var penType=document.getElementById('t-pen').value;
+  var penScore=document.getElementById('t-pen-score').value.trim();
   if(!comp||!seas)return;
-  G.career.trophies.push({id:Date.now(),comp:comp,season:seas,rival:rival,score:score});
+  var scoreDisplay=score+(penType==='pen'&&penScore?' ('+penScore+' pen.)':penType==='pen'?' (pen.)':'');
+  G.career.trophies.push({id:Date.now(),comp:comp,season:seas,rival:rival,score:scoreDisplay,pen:penType==='pen'});
   save();
-  ['t-comp','t-rival','t-score'].forEach(function(id){document.getElementById(id).value='';});
+  ['t-comp','t-rival','t-score','t-pen-score'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('t-pen').value='';
+  document.getElementById('t-pen-score-wrap').style.display='none';
   renderPalmares();
 }
 function removeTrophy(id){G.career.trophies=G.career.trophies.filter(function(t){return t.id!==id;});save();renderPalmares();}
@@ -1066,7 +1091,7 @@ function renderPalmares(){
       +'<div style="flex:1;min-width:0">'
         +'<div class="phnm">'+esc(t.comp)+'</div>'
         +'<div class="phsn">'+esc(t.season)+'</div>'
-        +(t.rival?'<div class="phdt">Final vs '+esc(t.rival)+(t.score?' ('+esc(t.score)+')':'')+'</div>':'')
+        +(t.rival?'<div class="phdt">Final vs '+esc(t.rival)+(t.score?' · '+esc(t.score):'')+(t.pen?' <span style="background:#E8782022;color:#E87820;border:1px solid #E8782050;border-radius:4px;font-size:9px;padding:1px 5px;font-weight:800">PEN</span>':'')+'</div>':'')
       +'</div>'
       +'<button class="del-btn" onclick="removeTrophy('+t.id+')" style="align-self:flex-start">✕</button>'
       +'</div>';
@@ -1574,6 +1599,10 @@ render();
 (function(){
   if(!G.career.trophies.some(function(t){return t.comp==='Copa del Rey'&&t.season==='2025/26';})){
     G.career.trophies.push({id:17290000001,comp:'Copa del Rey',season:'2025/26',rival:'Real Madrid',score:'2-1'});
+    save();renderPalmares();
+  }
+  if(!G.career.trophies.some(function(t){return t.comp==='Champions'&&t.season==='2025/26';})){
+    G.career.trophies.push({id:17290000002,comp:'Champions',season:'2025/26',rival:'PSG',score:'1-1 (4-2 pen.)',pen:true});
     save();renderPalmares();
   }
 })();
