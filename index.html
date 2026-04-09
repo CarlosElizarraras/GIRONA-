@@ -407,6 +407,7 @@ var RIVAL_LOGOS = {
   'Juventus':          'https://images.fotmob.com/image_resources/logo/teamlogo/9885.png',
   'Lazio':             'https://images.fotmob.com/image_resources/logo/teamlogo/8543.png',
   'Leganés':           'https://images.fotmob.com/image_resources/logo/teamlogo/7854.png',
+  'Liverpool':         'https://images.fotmob.com/image_resources/logo/teamlogo/8650.png',
   'Levante':           'https://images.fotmob.com/image_resources/logo/teamlogo/8581.png',
   'Mallorca':          'https://images.fotmob.com/image_resources/logo/teamlogo/8661.png',
   'Marsella':          'https://images.fotmob.com/image_resources/logo/teamlogo/8592.png',
@@ -474,7 +475,20 @@ function load(){
   if(!G.seasons[G.activeSeason])initSeason(G.activeSeason,['Liga','Copa del Rey']);
   if(!G.career)G.career={trophies:[]};
   if(!G.career.trophies)G.career.trophies=[];
-
+  // Migrate: rename 'Champions' -> 'Champions League' in all stored data
+  (function migrateCL(){
+    var changed=false;
+    Object.keys(G.seasons).forEach(function(sn){
+      var s=G.seasons[sn];
+      if(s.comps){s.comps=s.comps.map(function(c){if(c==='Champions'){changed=true;return'Champions League';}return c;});}
+      (s.matches||[]).forEach(function(m){if(m.comp==='Champions'){m.comp='Champions League';changed=true;}});
+      (s.players||[]).forEach(function(p){
+        if(p.stats&&p.stats['Champions']){p.stats['Champions League']=p.stats['Champions'];delete p.stats['Champions'];changed=true;}
+      });
+    });
+    (G.career.trophies||[]).forEach(function(t){if(t.comp==='Champions'){t.comp='Champions League';changed=true;}});
+    if(changed)try{localStorage.setItem(SK,JSON.stringify(G));}catch(e){}
+  })();
 }
 function initSeason(n,comps){G.seasons[n]={comps:comps||['Liga','Copa del Rey'],matches:[],players:[],trophies:[]};}
 function getAS(){return G.seasons[G.activeSeason];}
