@@ -399,6 +399,7 @@ var RIVAL_LOGOS = {
   'Deportivo La Coruña': 'https://images.fotmob.com/image_resources/logo/teamlogo/9783.png',
   'Dinamo Zagreb':     'https://images.fotmob.com/image_resources/logo/teamlogo/10156.png',
   'Eibar':             'https://images.fotmob.com/image_resources/logo/teamlogo/8372.png',
+  'Eintracht Frankfurt': 'https://images.fotmob.com/image_resources/logo/teamlogo/9810.png',
   'Elche':             'https://images.fotmob.com/image_resources/logo/teamlogo/10268.png',
   'Espanyol':          'https://images.fotmob.com/image_resources/logo/teamlogo/8558.png',
   'Inter Milán':       'https://images.fotmob.com/image_resources/logo/teamlogo/8636.png',
@@ -458,7 +459,7 @@ var PLAYER_PHOTOS = {
   'Viktor Tsygankov':    'https://images.fotmob.com/image_resources/playerimages/564847.png',
   'Vitor Reis':          'https://images.fotmob.com/image_resources/playerimages/1580952.png',
   'Vladyslav Vanat':     'https://images.fotmob.com/image_resources/playerimages/1231648.png',
-  'Yáser Asprilla':     'https://images.fotmob.com/image_resources/playerimages/1277380.png',
+  'Yáser Aspirilla':     'https://images.fotmob.com/image_resources/playerimages/1277380.png',
   'Álex Moreno':         'https://images.fotmob.com/image_resources/playerimages/477588.png',
 };
 
@@ -1469,6 +1470,7 @@ function openPlayerModal(name){
   document.getElementById('pm-badge').style.background=PLAYER_PHOTOS[name]?'transparent':pc+'22';
   document.getElementById('pm-badge').style.color=pc;
   document.getElementById('pm-badge').style.border='1px solid '+pc+'40';
+  document.getElementById('pm-name').textContent=name;
   document.getElementById('pm-pos').textContent=PL[pos]||pos;
 
   // Build body
